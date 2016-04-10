@@ -1,0 +1,27 @@
+language: c
+
+sudo: false
+
+env:
+  matrix:
+    - LUA=lua5.2
+    - LUA=lua5.3
+    - LUA=luajit
+    - LUA=luajit2.1
+
+branches:
+  only:
+    - master
+
+before_install:
+  - source <(curl -s http://rocks.simbio.se/travis.sh 2> /dev/null)
+  - luarocks install busted
+
+install: luarocks install *.rockspec --only-deps
+
+script: busted
+
+notifications:
+  email:
+    on_success: change
+    on_failure: always
