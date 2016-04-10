@@ -1,0 +1,55 @@
+freight(5) -- Freight configuration
+===================================
+
+## DESCRIPTION
+
+The Freight configuration is a `source`d shell script that defines a few important variables.
+
+## OPTIONS
+
+* `VARLIB`:
+  The Freight library directory.  Typically _/var/lib/freight_.
+* `VARCACHE`:
+  The Freight cache directory.  Typically _/var/cache/freight_.  This should be the document root of the web server.
+* `ARCHS`:
+  The architectures to support.  Typically _i386 amd64_.
+* `ORIGIN`:
+  The `Origin` field in the Debian archive.
+* `LABEL`:
+  The `Label` field in the Debian archive.
+* `CACHE`:
+  _on_ to cache package control files or _off_ to read them from the packages on each `freight-cache`(1) run.
+* `GPG`:
+  The GPG key to use.  This value must be set either in a configuration file or by using the `-g` option to `freight-cache`(1).
+* `GPG_PASSPHRASE_FILE`:
+  Pathname of a file containing the GPGP private key's passphrase.  This sets the `--passphrase-fd` and `--passphrase-file` options to `gpg`(1).  The passphrase file can be set either in a configuration file or by using the `-p` option to `freight-cache`(1).
+* `SYMLINKS`:
+  _on_ to follow symbolic links in `VARLIB` to produce extra components in the cache directory or _off_ to offer no special treatment.
+
+## FILES
+
+* _/etc/freight.conf_:
+  The default configuration file.
+* _~/.freight.conf_:
+  User-specific configuration file.
+* _etc/freight.conf_, _.freight.conf_:
+  Directory-specific configuration files.
+
+## ENVIRONMENT VARIABLES
+
+* `FREIGHT_CONF`:
+  The pathname of an alternate configuration file.
+
+## THEME SONG
+
+The New Pornographers - "All the Old Showstoppers"
+
+## AUTHOR
+
+Richard Crowley <r@rcrowley.org>
+
+## SEE ALSO
+
+`freight-add`(1) adds packages to the intermediate "Freight library" that is used by `freight-cache`(1) to build the actual repositories.
+
+`reprepro`(1) manages Debian archives, too, if Freight isn't your thing.
