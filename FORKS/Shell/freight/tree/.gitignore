@@ -1,0 +1,11 @@
+*.swp
+*.html
+*.deb
+*.dsc
+*.debian.tar.gz
+*.diff.gz
+*.orig.tar.gz
+*.tar.gz
+*~
+etc/freight.conf
+var
