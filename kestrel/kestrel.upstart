@@ -1,0 +1,16 @@
+description     "Kestrel"
+
+start on (net-device-up and local-filesystems and runlevel [2345])
+stop on runlevel [016]
+
+respawn
+respawn limit 10 5
+
+console log
+
+limit nofile 65000 65000
+
+setuid kestrel
+setgid kestrel
+
+exec /usr/bin/kestrel
