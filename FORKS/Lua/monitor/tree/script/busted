@@ -1,0 +1,64 @@
+#!/usr/bin/env ruby
+
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+require 'pathname'
+require 'shellwords'
+require 'dotenv'
+require 'tempfile'
+
+Dotenv.load ".env.test"
+
+files = ARGV.select { |arg| File.readable?(arg) }
+flags = ARGV - files
+
+files.map!{|path| Pathname(path).expand_path }
+
+opts = []
+resty = Pathname('script/resty').expand_path.to_s
+
+osx_luarocks = Pathname('/usr/local/Cellar/luarocks/')
+osx_luarocks = osx_luarocks.children.first             if osx_luarocks.exist?
+osx_luarocks = osx_luarocks.join('share/lua/5.1')      if osx_luarocks && osx_luarocks.exist?
+
+opts << '-I' << osx_luarocks.to_s if osx_luarocks &&  osx_luarocks.exist?
+
+loader = Tempfile.new('busted')
+Dir.chdir('lua') do
+  args = ["'--verbose'"]
+
+  flags.map! { |flag| "'#{flag}'" }
+  args.concat(flags)
+
+  files.map! { |path| "'#{path.relative_path_from(Pathname.pwd).to_s.shellescape}'" }
+
+  args.concat(files)
+
+  loader.puts <<-end
+local busted_bootstrap = io.popen('which busted_bootstrap', 'r'):read()
+local busted_lua = io.open(busted_bootstrap, 'r'):read('*a'):match([[([^'"]+/bin/busted_bootstrap)]])
+
+require "luarocks.loader"
+
+assert = require "luassert"
+spy    = require "luassert.spy"
+mock   = require "luassert.mock"
+stub   = require "luassert.stub"
+
+inspect = require "inspect"
+pinspect = function(x) print(inspect(x)) end
+_TEST = true
+
+arg = { run = '', #{args.compact.join(',')} }
+
+loadfile(busted_lua)()
+  end
+  loader.close
+  cmd = [
+    "eval $(luarocks path)",
+    "#{resty.shellescape} #{opts.map(&:shellescape).join(' ')} #{loader.path.shellescape}"
+  ].join(' && ')
+  puts cmd
+  exec(cmd)
+end
