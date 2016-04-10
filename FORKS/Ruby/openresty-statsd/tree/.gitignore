@@ -1,0 +1,5 @@
+.rvmrc
+tmp/*
+vendor/ngx*
+vendor/statsd*
+/luac.out
