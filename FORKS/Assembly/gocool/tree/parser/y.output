@@ -1,0 +1,1737 @@
+
+state 0
+	$accept: .prog $end 
+
+	error  shift 5
+	CLASS  shift 4
+	.  error
+
+	prog  goto 1
+	classes  goto 2
+	class  goto 3
+
+state 1
+	$accept:  prog.$end 
+
+	$end  accept
+	.  error
+
+
+state 2
+	prog:  classes.    (1)
+	classes:  classes.class 
+
+	$end  reduce 1 (src line 84)
+	error  shift 5
+	CLASS  shift 4
+	.  error
+
+	class  goto 6
+
+state 3
+	classes:  class.    (2)
+
+	.  reduce 2 (src line 92)
+
+
+state 4
+	class:  CLASS.TYPEID inherits '{' features '}' ';' 
+
+	TYPEID  shift 7
+	.  error
+
+
+state 5
+	class:  error.';' 
+
+	';'  shift 8
+	.  error
+
+
+state 6
+	classes:  classes class.    (3)
+
+	.  reduce 3 (src line 98)
+
+
+state 7
+	class:  CLASS TYPEID.inherits '{' features '}' ';' 
+	inherits: .    (6)
+
+	INHERITS  shift 10
+	.  reduce 6 (src line 112)
+
+	inherits  goto 9
+
+state 8
+	class:  error ';'.    (5)
+
+	.  reduce 5 (src line 108)
+
+
+state 9
+	class:  CLASS TYPEID inherits.'{' features '}' ';' 
+
+	'{'  shift 11
+	.  error
+
+
+state 10
+	inherits:  INHERITS.TYPEID 
+
+	TYPEID  shift 12
+	.  error
+
+
+state 11
+	class:  CLASS TYPEID inherits '{'.features '}' ';' 
+	features: .    (8)
+
+	error  shift 14
+	OBJECTID  reduce 8 (src line 119)
+	'}'  reduce 8 (src line 119)
+	.  error
+
+	features  goto 13
+
+state 12
+	inherits:  INHERITS TYPEID.    (7)
+
+	.  reduce 7 (src line 115)
+
+
+state 13
+	class:  CLASS TYPEID inherits '{' features.'}' ';' 
+	features:  features.feature 
+
+	OBJECTID  shift 17
+	'}'  shift 15
+	.  error
+
+	feature  goto 16
+
+state 14
+	features:  error.';' 
+
+	';'  shift 18
+	.  error
+
+
+state 15
+	class:  CLASS TYPEID inherits '{' features '}'.';' 
+
+	';'  shift 19
+	.  error
+
+
+state 16
+	features:  features feature.    (9)
+
+	.  reduce 9 (src line 122)
+
+
+state 17
+	feature:  OBJECTID.'(' formals ')' ':' TYPEID '{' expr '}' ';' 
+	feature:  OBJECTID.':' TYPEID maybeassign ';' 
+	feature:  OBJECTID.'(' formals ')' ':' TYPEID '{' error '}' 
+	feature:  OBJECTID.'(' formals error ')' ':' TYPEID '{' expr '}' 
+
+	'('  shift 20
+	':'  shift 21
+	.  error
+
+
+state 18
+	features:  error ';'.    (10)
+
+	.  reduce 10 (src line 127)
+
+
+state 19
+	class:  CLASS TYPEID inherits '{' features '}' ';'.    (4)
+
+	.  reduce 4 (src line 105)
+
+
+state 20
+	feature:  OBJECTID '('.formals ')' ':' TYPEID '{' expr '}' ';' 
+	feature:  OBJECTID '('.formals ')' ':' TYPEID '{' error '}' 
+	feature:  OBJECTID '('.formals error ')' ':' TYPEID '{' expr '}' 
+	formals: .    (17)
+
+	OBJECTID  shift 24
+	.  reduce 17 (src line 149)
+
+	formals  goto 22
+	formal  goto 23
+
+state 21
+	feature:  OBJECTID ':'.TYPEID maybeassign ';' 
+
+	TYPEID  shift 25
+	.  error
+
+
+state 22
+	feature:  OBJECTID '(' formals.')' ':' TYPEID '{' expr '}' ';' 
+	feature:  OBJECTID '(' formals.')' ':' TYPEID '{' error '}' 
+	feature:  OBJECTID '(' formals.error ')' ':' TYPEID '{' expr '}' 
+
+	error  shift 27
+	')'  shift 26
+	.  error
+
+
+state 23
+	formals:  formal.commaformals 
+	commaformals: .    (19)
+
+	.  reduce 19 (src line 163)
+
+	commaformals  goto 28
+
+state 24
+	formal:  OBJECTID.':' TYPEID 
+
+	':'  shift 29
+	.  error
+
+
+state 25
+	feature:  OBJECTID ':' TYPEID.maybeassign ';' 
+	maybeassign: .    (15)
+
+	ASSIGN  shift 31
+	.  reduce 15 (src line 142)
+
+	maybeassign  goto 30
+
+state 26
+	feature:  OBJECTID '(' formals ')'.':' TYPEID '{' expr '}' ';' 
+	feature:  OBJECTID '(' formals ')'.':' TYPEID '{' error '}' 
+
+	':'  shift 32
+	.  error
+
+
+state 27
+	feature:  OBJECTID '(' formals error.')' ':' TYPEID '{' expr '}' 
+
+	')'  shift 33
+	.  error
+
+
+state 28
+	formals:  formal commaformals.    (18)
+	commaformals:  commaformals.',' formal 
+
+	','  shift 34
+	.  reduce 18 (src line 152)
+
+
+state 29
+	formal:  OBJECTID ':'.TYPEID 
+
+	TYPEID  shift 35
+	.  error
+
+
+state 30
+	feature:  OBJECTID ':' TYPEID maybeassign.';' 
+
+	';'  shift 36
+	.  error
+
+
+state 31
+	maybeassign:  ASSIGN.expr 
+
+	BOOL  shift 51
+	CASE  shift 43
+	IF  shift 39
+	ISVOID  shift 45
+	LET  shift 42
+	NEW  shift 44
+	NOT  shift 47
+	NUM  shift 49
+	OBJECTID  shift 38
+	STRING  shift 50
+	WHILE  shift 40
+	'~'  shift 46
+	'{'  shift 41
+	'('  shift 48
+	.  error
+
+	expr  goto 37
+
+state 32
+	feature:  OBJECTID '(' formals ')' ':'.TYPEID '{' expr '}' ';' 
+	feature:  OBJECTID '(' formals ')' ':'.TYPEID '{' error '}' 
+
+	TYPEID  shift 52
+	.  error
+
+
+state 33
+	feature:  OBJECTID '(' formals error ')'.':' TYPEID '{' expr '}' 
+
+	':'  shift 53
+	.  error
+
+
+state 34
+	commaformals:  commaformals ','.formal 
+
+	OBJECTID  shift 24
+	.  error
+
+	formal  goto 54
+
+state 35
+	formal:  OBJECTID ':' TYPEID.    (21)
+
+	.  reduce 21 (src line 173)
+
+
+state 36
+	feature:  OBJECTID ':' TYPEID maybeassign ';'.    (12)
+
+	.  reduce 12 (src line 134)
+
+
+state 37
+	maybeassign:  ASSIGN expr.    (16)
+	expr:  expr.'@' TYPEID '.' OBJECTID '(' maybeexprs ')' 
+	expr:  expr.'.' OBJECTID '(' maybeexprs ')' 
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+	expr:  expr.CMP expr 
+
+	CMP  shift 61
+	'+'  shift 57
+	'-'  shift 58
+	'*'  shift 59
+	'/'  shift 60
+	'@'  shift 55
+	'.'  shift 56
+	.  reduce 16 (src line 145)
+
+
+state 38
+	expr:  OBJECTID.ASSIGN expr 
+	expr:  OBJECTID.'(' maybeexprs ')' 
+	expr:  OBJECTID.    (41)
+
+	ASSIGN  shift 62
+	'('  shift 63
+	.  reduce 41 (src line 220)
+
+
+state 39
+	expr:  IF.expr THEN expr ELSE expr FI 
+
+	BOOL  shift 51
+	CASE  shift 43
+	IF  shift 39
+	ISVOID  shift 45
+	LET  shift 42
+	NEW  shift 44
+	NOT  shift 47
+	NUM  shift 49
+	OBJECTID  shift 38
+	STRING  shift 50
+	WHILE  shift 40
+	'~'  shift 46
+	'{'  shift 41
+	'('  shift 48
+	.  error
+
+	expr  goto 64
+
+state 40
+	expr:  WHILE.expr LOOP expr POOL 
+
+	BOOL  shift 51
+	CASE  shift 43
+	IF  shift 39
+	ISVOID  shift 45
+	LET  shift 42
+	NEW  shift 44
+	NOT  shift 47
+	NUM  shift 49
+	OBJECTID  shift 38
+	STRING  shift 50
+	WHILE  shift 40
+	'~'  shift 46
+	'{'  shift 41
+	'('  shift 48
+	.  error
+
+	expr  goto 65
+
+state 41
+	expr:  '{'.exprlist '}' 
+
+	error  shift 68
+	BOOL  shift 51
+	CASE  shift 43
+	IF  shift 39
+	ISVOID  shift 45
+	LET  shift 42
+	NEW  shift 44
+	NOT  shift 47
+	NUM  shift 49
+	OBJECTID  shift 38
+	STRING  shift 50
+	WHILE  shift 40
+	'~'  shift 46
+	'{'  shift 41
+	'('  shift 48
+	.  error
+
+	expr  goto 67
+	exprlist  goto 66
+
+state 42
+	expr:  LET.bindings IN expr 
+
+	error  shift 71
+	OBJECTID  shift 72
+	.  error
+
+	bindings  goto 69
+	binding  goto 70
+
+state 43
+	expr:  CASE.expr OF branches ESAC 
+
+	BOOL  shift 51
+	CASE  shift 43
+	IF  shift 39
+	ISVOID  shift 45
+	LET  shift 42
+	NEW  shift 44
+	NOT  shift 47
+	NUM  shift 49
+	OBJECTID  shift 38
+	STRING  shift 50
+	WHILE  shift 40
+	'~'  shift 46
+	'{'  shift 41
+	'('  shift 48
+	.  error
+
+	expr  goto 73
+
+state 44
+	expr:  NEW.TYPEID 
+
+	TYPEID  shift 74
+	.  error
+
+
+state 45
+	expr:  ISVOID.expr 
+
+	BOOL  shift 51
+	CASE  shift 43
+	IF  shift 39
+	ISVOID  shift 45
+	LET  shift 42
+	NEW  shift 44
+	NOT  shift 47
+	NUM  shift 49
+	OBJECTID  shift 38
+	STRING  shift 50
+	WHILE  shift 40
+	'~'  shift 46
+	'{'  shift 41
+	'('  shift 48
+	.  error
+
+	expr  goto 75
+
+state 46
+	expr:  '~'.expr 
+
+	BOOL  shift 51
+	CASE  shift 43
+	IF  shift 39
+	ISVOID  shift 45
+	LET  shift 42
+	NEW  shift 44
+	NOT  shift 47
+	NUM  shift 49
+	OBJECTID  shift 38
+	STRING  shift 50
+	WHILE  shift 40
+	'~'  shift 46
+	'{'  shift 41
+	'('  shift 48
+	.  error
+
+	expr  goto 76
+
+state 47
+	expr:  NOT.expr 
+
+	BOOL  shift 51
+	CASE  shift 43
+	IF  shift 39
+	ISVOID  shift 45
+	LET  shift 42
+	NEW  shift 44
+	NOT  shift 47
+	NUM  shift 49
+	OBJECTID  shift 38
+	STRING  shift 50
+	WHILE  shift 40
+	'~'  shift 46
+	'{'  shift 41
+	'('  shift 48
+	.  error
+
+	expr  goto 77
+
+state 48
+	expr:  '('.expr ')' 
+
+	BOOL  shift 51
+	CASE  shift 43
+	IF  shift 39
+	ISVOID  shift 45
+	LET  shift 42
+	NEW  shift 44
+	NOT  shift 47
+	NUM  shift 49
+	OBJECTID  shift 38
+	STRING  shift 50
+	WHILE  shift 40
+	'~'  shift 46
+	'{'  shift 41
+	'('  shift 48
+	.  error
+
+	expr  goto 78
+
+state 49
+	expr:  NUM.    (42)
+
+	.  reduce 42 (src line 222)
+
+
+state 50
+	expr:  STRING.    (43)
+
+	.  reduce 43 (src line 224)
+
+
+state 51
+	expr:  BOOL.    (44)
+
+	.  reduce 44 (src line 226)
+
+
+state 52
+	feature:  OBJECTID '(' formals ')' ':' TYPEID.'{' expr '}' ';' 
+	feature:  OBJECTID '(' formals ')' ':' TYPEID.'{' error '}' 
+
+	'{'  shift 79
+	.  error
+
+
+state 53
+	feature:  OBJECTID '(' formals error ')' ':'.TYPEID '{' expr '}' 
+
+	TYPEID  shift 80
+	.  error
+
+
+state 54
+	commaformals:  commaformals ',' formal.    (20)
+
+	.  reduce 20 (src line 166)
+
+
+state 55
+	expr:  expr '@'.TYPEID '.' OBJECTID '(' maybeexprs ')' 
+
+	TYPEID  shift 81
+	.  error
+
+
+state 56
+	expr:  expr '.'.OBJECTID '(' maybeexprs ')' 
+
+	OBJECTID  shift 82
+	.  error
+
+
+state 57
+	expr:  expr '+'.expr 
+
+	BOOL  shift 51
+	CASE  shift 43
+	IF  shift 39
+	ISVOID  shift 45
+	LET  shift 42
+	NEW  shift 44
+	NOT  shift 47
+	NUM  shift 49
+	OBJECTID  shift 38
+	STRING  shift 50
+	WHILE  shift 40
+	'~'  shift 46
+	'{'  shift 41
+	'('  shift 48
+	.  error
+
+	expr  goto 83
+
+state 58
+	expr:  expr '-'.expr 
+
+	BOOL  shift 51
+	CASE  shift 43
+	IF  shift 39
+	ISVOID  shift 45
+	LET  shift 42
+	NEW  shift 44
+	NOT  shift 47
+	NUM  shift 49
+	OBJECTID  shift 38
+	STRING  shift 50
+	WHILE  shift 40
+	'~'  shift 46
+	'{'  shift 41
+	'('  shift 48
+	.  error
+
+	expr  goto 84
+
+state 59
+	expr:  expr '*'.expr 
+
+	BOOL  shift 51
+	CASE  shift 43
+	IF  shift 39
+	ISVOID  shift 45
+	LET  shift 42
+	NEW  shift 44
+	NOT  shift 47
+	NUM  shift 49
+	OBJECTID  shift 38
+	STRING  shift 50
+	WHILE  shift 40
+	'~'  shift 46
+	'{'  shift 41
+	'('  shift 48
+	.  error
+
+	expr  goto 85
+
+state 60
+	expr:  expr '/'.expr 
+
+	BOOL  shift 51
+	CASE  shift 43
+	IF  shift 39
+	ISVOID  shift 45
+	LET  shift 42
+	NEW  shift 44
+	NOT  shift 47
+	NUM  shift 49
+	OBJECTID  shift 38
+	STRING  shift 50
+	WHILE  shift 40
+	'~'  shift 46
+	'{'  shift 41
+	'('  shift 48
+	.  error
+
+	expr  goto 86
+
+state 61
+	expr:  expr CMP.expr 
+
+	BOOL  shift 51
+	CASE  shift 43
+	IF  shift 39
+	ISVOID  shift 45
+	LET  shift 42
+	NEW  shift 44
+	NOT  shift 47
+	NUM  shift 49
+	OBJECTID  shift 38
+	STRING  shift 50
+	WHILE  shift 40
+	'~'  shift 46
+	'{'  shift 41
+	'('  shift 48
+	.  error
+
+	expr  goto 87
+
+state 62
+	expr:  OBJECTID ASSIGN.expr 
+
+	BOOL  shift 51
+	CASE  shift 43
+	IF  shift 39
+	ISVOID  shift 45
+	LET  shift 42
+	NEW  shift 44
+	NOT  shift 47
+	NUM  shift 49
+	OBJECTID  shift 38
+	STRING  shift 50
+	WHILE  shift 40
+	'~'  shift 46
+	'{'  shift 41
+	'('  shift 48
+	.  error
+
+	expr  goto 88
+
+state 63
+	expr:  OBJECTID '('.maybeexprs ')' 
+	maybeexprs: .    (45)
+
+	BOOL  shift 51
+	CASE  shift 43
+	IF  shift 39
+	ISVOID  shift 45
+	LET  shift 42
+	NEW  shift 44
+	NOT  shift 47
+	NUM  shift 49
+	OBJECTID  shift 38
+	STRING  shift 50
+	WHILE  shift 40
+	'~'  shift 46
+	'{'  shift 41
+	'('  shift 48
+	.  reduce 45 (src line 230)
+
+	expr  goto 91
+	exprs  goto 90
+	maybeexprs  goto 89
+
+state 64
+	expr:  expr.'@' TYPEID '.' OBJECTID '(' maybeexprs ')' 
+	expr:  expr.'.' OBJECTID '(' maybeexprs ')' 
+	expr:  IF expr.THEN expr ELSE expr FI 
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+	expr:  expr.CMP expr 
+
+	CMP  shift 61
+	THEN  shift 92
+	'+'  shift 57
+	'-'  shift 58
+	'*'  shift 59
+	'/'  shift 60
+	'@'  shift 55
+	'.'  shift 56
+	.  error
+
+
+state 65
+	expr:  expr.'@' TYPEID '.' OBJECTID '(' maybeexprs ')' 
+	expr:  expr.'.' OBJECTID '(' maybeexprs ')' 
+	expr:  WHILE expr.LOOP expr POOL 
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+	expr:  expr.CMP expr 
+
+	CMP  shift 61
+	LOOP  shift 93
+	'+'  shift 57
+	'-'  shift 58
+	'*'  shift 59
+	'/'  shift 60
+	'@'  shift 55
+	'.'  shift 56
+	.  error
+
+
+state 66
+	expr:  '{' exprlist.'}' 
+	exprlist:  exprlist.expr ';' 
+
+	BOOL  shift 51
+	CASE  shift 43
+	IF  shift 39
+	ISVOID  shift 45
+	LET  shift 42
+	NEW  shift 44
+	NOT  shift 47
+	NUM  shift 49
+	OBJECTID  shift 38
+	STRING  shift 50
+	WHILE  shift 40
+	'~'  shift 46
+	'{'  shift 41
+	'}'  shift 94
+	'('  shift 48
+	.  error
+
+	expr  goto 95
+
+state 67
+	expr:  expr.'@' TYPEID '.' OBJECTID '(' maybeexprs ')' 
+	expr:  expr.'.' OBJECTID '(' maybeexprs ')' 
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+	expr:  expr.CMP expr 
+	exprlist:  expr.';' 
+
+	CMP  shift 61
+	'+'  shift 57
+	'-'  shift 58
+	'*'  shift 59
+	'/'  shift 60
+	'@'  shift 55
+	'.'  shift 56
+	';'  shift 96
+	.  error
+
+
+state 68
+	exprlist:  error.';' 
+
+	';'  shift 97
+	.  error
+
+
+state 69
+	expr:  LET bindings.IN expr 
+	bindings:  bindings.',' binding 
+
+	IN  shift 98
+	','  shift 99
+	.  error
+
+
+state 70
+	bindings:  binding.    (52)
+
+	.  reduce 52 (src line 253)
+
+
+state 71
+	bindings:  error.    (54)
+
+	.  reduce 54 (src line 258)
+
+
+state 72
+	binding:  OBJECTID.':' TYPEID maybeassign 
+
+	':'  shift 100
+	.  error
+
+
+state 73
+	expr:  expr.'@' TYPEID '.' OBJECTID '(' maybeexprs ')' 
+	expr:  expr.'.' OBJECTID '(' maybeexprs ')' 
+	expr:  CASE expr.OF branches ESAC 
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+	expr:  expr.CMP expr 
+
+	CMP  shift 61
+	OF  shift 101
+	'+'  shift 57
+	'-'  shift 58
+	'*'  shift 59
+	'/'  shift 60
+	'@'  shift 55
+	'.'  shift 56
+	.  error
+
+
+state 74
+	expr:  NEW TYPEID.    (31)
+
+	.  reduce 31 (src line 197)
+
+
+state 75
+	expr:  expr.'@' TYPEID '.' OBJECTID '(' maybeexprs ')' 
+	expr:  expr.'.' OBJECTID '(' maybeexprs ')' 
+	expr:  ISVOID expr.    (32)
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+	expr:  expr.CMP expr 
+
+	'@'  shift 55
+	'.'  shift 56
+	.  reduce 32 (src line 199)
+
+
+state 76
+	expr:  expr.'@' TYPEID '.' OBJECTID '(' maybeexprs ')' 
+	expr:  expr.'.' OBJECTID '(' maybeexprs ')' 
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+	expr:  '~' expr.    (37)
+	expr:  expr.CMP expr 
+
+	'@'  shift 55
+	'.'  shift 56
+	.  reduce 37 (src line 209)
+
+
+state 77
+	expr:  expr.'@' TYPEID '.' OBJECTID '(' maybeexprs ')' 
+	expr:  expr.'.' OBJECTID '(' maybeexprs ')' 
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+	expr:  expr.CMP expr 
+	expr:  NOT expr.    (39)
+
+	CMP  shift 61
+	'+'  shift 57
+	'-'  shift 58
+	'*'  shift 59
+	'/'  shift 60
+	'@'  shift 55
+	'.'  shift 56
+	.  reduce 39 (src line 213)
+
+
+state 78
+	expr:  expr.'@' TYPEID '.' OBJECTID '(' maybeexprs ')' 
+	expr:  expr.'.' OBJECTID '(' maybeexprs ')' 
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+	expr:  expr.CMP expr 
+	expr:  '(' expr.')' 
+
+	CMP  shift 61
+	'+'  shift 57
+	'-'  shift 58
+	'*'  shift 59
+	'/'  shift 60
+	'@'  shift 55
+	'.'  shift 56
+	')'  shift 102
+	.  error
+
+
+state 79
+	feature:  OBJECTID '(' formals ')' ':' TYPEID '{'.expr '}' ';' 
+	feature:  OBJECTID '(' formals ')' ':' TYPEID '{'.error '}' 
+
+	error  shift 104
+	BOOL  shift 51
+	CASE  shift 43
+	IF  shift 39
+	ISVOID  shift 45
+	LET  shift 42
+	NEW  shift 44
+	NOT  shift 47
+	NUM  shift 49
+	OBJECTID  shift 38
+	STRING  shift 50
+	WHILE  shift 40
+	'~'  shift 46
+	'{'  shift 41
+	'('  shift 48
+	.  error
+
+	expr  goto 103
+
+state 80
+	feature:  OBJECTID '(' formals error ')' ':' TYPEID.'{' expr '}' 
+
+	'{'  shift 105
+	.  error
+
+
+state 81
+	expr:  expr '@' TYPEID.'.' OBJECTID '(' maybeexprs ')' 
+
+	'.'  shift 106
+	.  error
+
+
+state 82
+	expr:  expr '.' OBJECTID.'(' maybeexprs ')' 
+
+	'('  shift 107
+	.  error
+
+
+state 83
+	expr:  expr.'@' TYPEID '.' OBJECTID '(' maybeexprs ')' 
+	expr:  expr.'.' OBJECTID '(' maybeexprs ')' 
+	expr:  expr.'+' expr 
+	expr:  expr '+' expr.    (33)
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+	expr:  expr.CMP expr 
+
+	'*'  shift 59
+	'/'  shift 60
+	'@'  shift 55
+	'.'  shift 56
+	.  reduce 33 (src line 201)
+
+
+state 84
+	expr:  expr.'@' TYPEID '.' OBJECTID '(' maybeexprs ')' 
+	expr:  expr.'.' OBJECTID '(' maybeexprs ')' 
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr '-' expr.    (34)
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+	expr:  expr.CMP expr 
+
+	'*'  shift 59
+	'/'  shift 60
+	'@'  shift 55
+	'.'  shift 56
+	.  reduce 34 (src line 203)
+
+
+state 85
+	expr:  expr.'@' TYPEID '.' OBJECTID '(' maybeexprs ')' 
+	expr:  expr.'.' OBJECTID '(' maybeexprs ')' 
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr '*' expr.    (35)
+	expr:  expr.'/' expr 
+	expr:  expr.CMP expr 
+
+	'@'  shift 55
+	'.'  shift 56
+	.  reduce 35 (src line 205)
+
+
+state 86
+	expr:  expr.'@' TYPEID '.' OBJECTID '(' maybeexprs ')' 
+	expr:  expr.'.' OBJECTID '(' maybeexprs ')' 
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+	expr:  expr '/' expr.    (36)
+	expr:  expr.CMP expr 
+
+	'@'  shift 55
+	'.'  shift 56
+	.  reduce 36 (src line 207)
+
+
+state 87
+	expr:  expr.'@' TYPEID '.' OBJECTID '(' maybeexprs ')' 
+	expr:  expr.'.' OBJECTID '(' maybeexprs ')' 
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+	expr:  expr.CMP expr 
+	expr:  expr CMP expr.    (38)
+
+	CMP  error
+	'+'  shift 57
+	'-'  shift 58
+	'*'  shift 59
+	'/'  shift 60
+	'@'  shift 55
+	'.'  shift 56
+	.  reduce 38 (src line 211)
+
+
+state 88
+	expr:  OBJECTID ASSIGN expr.    (22)
+	expr:  expr.'@' TYPEID '.' OBJECTID '(' maybeexprs ')' 
+	expr:  expr.'.' OBJECTID '(' maybeexprs ')' 
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+	expr:  expr.CMP expr 
+
+	CMP  shift 61
+	'+'  shift 57
+	'-'  shift 58
+	'*'  shift 59
+	'/'  shift 60
+	'@'  shift 55
+	'.'  shift 56
+	.  reduce 22 (src line 178)
+
+
+state 89
+	expr:  OBJECTID '(' maybeexprs.')' 
+
+	')'  shift 108
+	.  error
+
+
+state 90
+	maybeexprs:  exprs.    (46)
+	exprs:  exprs.',' expr 
+
+	','  shift 109
+	.  reduce 46 (src line 233)
+
+
+state 91
+	expr:  expr.'@' TYPEID '.' OBJECTID '(' maybeexprs ')' 
+	expr:  expr.'.' OBJECTID '(' maybeexprs ')' 
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+	expr:  expr.CMP expr 
+	exprs:  expr.    (47)
+
+	CMP  shift 61
+	'+'  shift 57
+	'-'  shift 58
+	'*'  shift 59
+	'/'  shift 60
+	'@'  shift 55
+	'.'  shift 56
+	.  reduce 47 (src line 237)
+
+
+state 92
+	expr:  IF expr THEN.expr ELSE expr FI 
+
+	BOOL  shift 51
+	CASE  shift 43
+	IF  shift 39
+	ISVOID  shift 45
+	LET  shift 42
+	NEW  shift 44
+	NOT  shift 47
+	NUM  shift 49
+	OBJECTID  shift 38
+	STRING  shift 50
+	WHILE  shift 40
+	'~'  shift 46
+	'{'  shift 41
+	'('  shift 48
+	.  error
+
+	expr  goto 110
+
+state 93
+	expr:  WHILE expr LOOP.expr POOL 
+
+	BOOL  shift 51
+	CASE  shift 43
+	IF  shift 39
+	ISVOID  shift 45
+	LET  shift 42
+	NEW  shift 44
+	NOT  shift 47
+	NUM  shift 49
+	OBJECTID  shift 38
+	STRING  shift 50
+	WHILE  shift 40
+	'~'  shift 46
+	'{'  shift 41
+	'('  shift 48
+	.  error
+
+	expr  goto 111
+
+state 94
+	expr:  '{' exprlist '}'.    (28)
+
+	.  reduce 28 (src line 191)
+
+
+state 95
+	expr:  expr.'@' TYPEID '.' OBJECTID '(' maybeexprs ')' 
+	expr:  expr.'.' OBJECTID '(' maybeexprs ')' 
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+	expr:  expr.CMP expr 
+	exprlist:  exprlist expr.';' 
+
+	CMP  shift 61
+	'+'  shift 57
+	'-'  shift 58
+	'*'  shift 59
+	'/'  shift 60
+	'@'  shift 55
+	'.'  shift 56
+	';'  shift 112
+	.  error
+
+
+state 96
+	exprlist:  expr ';'.    (49)
+
+	.  reduce 49 (src line 244)
+
+
+state 97
+	exprlist:  error ';'.    (51)
+
+	.  reduce 51 (src line 249)
+
+
+state 98
+	expr:  LET bindings IN.expr 
+
+	BOOL  shift 51
+	CASE  shift 43
+	IF  shift 39
+	ISVOID  shift 45
+	LET  shift 42
+	NEW  shift 44
+	NOT  shift 47
+	NUM  shift 49
+	OBJECTID  shift 38
+	STRING  shift 50
+	WHILE  shift 40
+	'~'  shift 46
+	'{'  shift 41
+	'('  shift 48
+	.  error
+
+	expr  goto 113
+
+state 99
+	bindings:  bindings ','.binding 
+
+	OBJECTID  shift 72
+	.  error
+
+	binding  goto 114
+
+state 100
+	binding:  OBJECTID ':'.TYPEID maybeassign 
+
+	TYPEID  shift 115
+	.  error
+
+
+state 101
+	expr:  CASE expr OF.branches ESAC 
+
+	OBJECTID  shift 118
+	.  error
+
+	branch  goto 117
+	branches  goto 116
+
+state 102
+	expr:  '(' expr ')'.    (40)
+
+	.  reduce 40 (src line 215)
+
+
+state 103
+	feature:  OBJECTID '(' formals ')' ':' TYPEID '{' expr.'}' ';' 
+	expr:  expr.'@' TYPEID '.' OBJECTID '(' maybeexprs ')' 
+	expr:  expr.'.' OBJECTID '(' maybeexprs ')' 
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+	expr:  expr.CMP expr 
+
+	CMP  shift 61
+	'+'  shift 57
+	'-'  shift 58
+	'*'  shift 59
+	'/'  shift 60
+	'@'  shift 55
+	'.'  shift 56
+	'}'  shift 119
+	.  error
+
+
+state 104
+	feature:  OBJECTID '(' formals ')' ':' TYPEID '{' error.'}' 
+
+	'}'  shift 120
+	.  error
+
+
+state 105
+	feature:  OBJECTID '(' formals error ')' ':' TYPEID '{'.expr '}' 
+
+	BOOL  shift 51
+	CASE  shift 43
+	IF  shift 39
+	ISVOID  shift 45
+	LET  shift 42
+	NEW  shift 44
+	NOT  shift 47
+	NUM  shift 49
+	OBJECTID  shift 38
+	STRING  shift 50
+	WHILE  shift 40
+	'~'  shift 46
+	'{'  shift 41
+	'('  shift 48
+	.  error
+
+	expr  goto 121
+
+state 106
+	expr:  expr '@' TYPEID '.'.OBJECTID '(' maybeexprs ')' 
+
+	OBJECTID  shift 122
+	.  error
+
+
+state 107
+	expr:  expr '.' OBJECTID '('.maybeexprs ')' 
+	maybeexprs: .    (45)
+
+	BOOL  shift 51
+	CASE  shift 43
+	IF  shift 39
+	ISVOID  shift 45
+	LET  shift 42
+	NEW  shift 44
+	NOT  shift 47
+	NUM  shift 49
+	OBJECTID  shift 38
+	STRING  shift 50
+	WHILE  shift 40
+	'~'  shift 46
+	'{'  shift 41
+	'('  shift 48
+	.  reduce 45 (src line 230)
+
+	expr  goto 91
+	exprs  goto 90
+	maybeexprs  goto 123
+
+state 108
+	expr:  OBJECTID '(' maybeexprs ')'.    (25)
+
+	.  reduce 25 (src line 185)
+
+
+state 109
+	exprs:  exprs ','.expr 
+
+	BOOL  shift 51
+	CASE  shift 43
+	IF  shift 39
+	ISVOID  shift 45
+	LET  shift 42
+	NEW  shift 44
+	NOT  shift 47
+	NUM  shift 49
+	OBJECTID  shift 38
+	STRING  shift 50
+	WHILE  shift 40
+	'~'  shift 46
+	'{'  shift 41
+	'('  shift 48
+	.  error
+
+	expr  goto 124
+
+state 110
+	expr:  expr.'@' TYPEID '.' OBJECTID '(' maybeexprs ')' 
+	expr:  expr.'.' OBJECTID '(' maybeexprs ')' 
+	expr:  IF expr THEN expr.ELSE expr FI 
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+	expr:  expr.CMP expr 
+
+	CMP  shift 61
+	ELSE  shift 125
+	'+'  shift 57
+	'-'  shift 58
+	'*'  shift 59
+	'/'  shift 60
+	'@'  shift 55
+	'.'  shift 56
+	.  error
+
+
+state 111
+	expr:  expr.'@' TYPEID '.' OBJECTID '(' maybeexprs ')' 
+	expr:  expr.'.' OBJECTID '(' maybeexprs ')' 
+	expr:  WHILE expr LOOP expr.POOL 
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+	expr:  expr.CMP expr 
+
+	CMP  shift 61
+	POOL  shift 126
+	'+'  shift 57
+	'-'  shift 58
+	'*'  shift 59
+	'/'  shift 60
+	'@'  shift 55
+	'.'  shift 56
+	.  error
+
+
+state 112
+	exprlist:  exprlist expr ';'.    (50)
+
+	.  reduce 50 (src line 247)
+
+
+state 113
+	expr:  expr.'@' TYPEID '.' OBJECTID '(' maybeexprs ')' 
+	expr:  expr.'.' OBJECTID '(' maybeexprs ')' 
+	expr:  LET bindings IN expr.    (29)
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+	expr:  expr.CMP expr 
+
+	CMP  shift 61
+	'+'  shift 57
+	'-'  shift 58
+	'*'  shift 59
+	'/'  shift 60
+	'@'  shift 55
+	'.'  shift 56
+	.  reduce 29 (src line 193)
+
+
+state 114
+	bindings:  bindings ',' binding.    (53)
+
+	.  reduce 53 (src line 256)
+
+
+state 115
+	binding:  OBJECTID ':' TYPEID.maybeassign 
+	maybeassign: .    (15)
+
+	ASSIGN  shift 31
+	.  reduce 15 (src line 142)
+
+	maybeassign  goto 127
+
+state 116
+	expr:  CASE expr OF branches.ESAC 
+	branches:  branches.branch 
+
+	ESAC  shift 128
+	OBJECTID  shift 118
+	.  error
+
+	branch  goto 129
+
+state 117
+	branches:  branch.    (56)
+
+	.  reduce 56 (src line 267)
+
+
+state 118
+	branch:  OBJECTID.':' TYPEID DARROW expr ';' 
+
+	':'  shift 130
+	.  error
+
+
+state 119
+	feature:  OBJECTID '(' formals ')' ':' TYPEID '{' expr '}'.';' 
+
+	';'  shift 131
+	.  error
+
+
+state 120
+	feature:  OBJECTID '(' formals ')' ':' TYPEID '{' error '}'.    (13)
+
+	.  reduce 13 (src line 136)
+
+
+state 121
+	feature:  OBJECTID '(' formals error ')' ':' TYPEID '{' expr.'}' 
+	expr:  expr.'@' TYPEID '.' OBJECTID '(' maybeexprs ')' 
+	expr:  expr.'.' OBJECTID '(' maybeexprs ')' 
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+	expr:  expr.CMP expr 
+
+	CMP  shift 61
+	'+'  shift 57
+	'-'  shift 58
+	'*'  shift 59
+	'/'  shift 60
+	'@'  shift 55
+	'.'  shift 56
+	'}'  shift 132
+	.  error
+
+
+state 122
+	expr:  expr '@' TYPEID '.' OBJECTID.'(' maybeexprs ')' 
+
+	'('  shift 133
+	.  error
+
+
+state 123
+	expr:  expr '.' OBJECTID '(' maybeexprs.')' 
+
+	')'  shift 134
+	.  error
+
+
+state 124
+	expr:  expr.'@' TYPEID '.' OBJECTID '(' maybeexprs ')' 
+	expr:  expr.'.' OBJECTID '(' maybeexprs ')' 
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+	expr:  expr.CMP expr 
+	exprs:  exprs ',' expr.    (48)
+
+	CMP  shift 61
+	'+'  shift 57
+	'-'  shift 58
+	'*'  shift 59
+	'/'  shift 60
+	'@'  shift 55
+	'.'  shift 56
+	.  reduce 48 (src line 240)
+
+
+state 125
+	expr:  IF expr THEN expr ELSE.expr FI 
+
+	BOOL  shift 51
+	CASE  shift 43
+	IF  shift 39
+	ISVOID  shift 45
+	LET  shift 42
+	NEW  shift 44
+	NOT  shift 47
+	NUM  shift 49
+	OBJECTID  shift 38
+	STRING  shift 50
+	WHILE  shift 40
+	'~'  shift 46
+	'{'  shift 41
+	'('  shift 48
+	.  error
+
+	expr  goto 135
+
+state 126
+	expr:  WHILE expr LOOP expr POOL.    (27)
+
+	.  reduce 27 (src line 189)
+
+
+state 127
+	binding:  OBJECTID ':' TYPEID maybeassign.    (55)
+
+	.  reduce 55 (src line 262)
+
+
+state 128
+	expr:  CASE expr OF branches ESAC.    (30)
+
+	.  reduce 30 (src line 195)
+
+
+state 129
+	branches:  branches branch.    (57)
+
+	.  reduce 57 (src line 270)
+
+
+state 130
+	branch:  OBJECTID ':'.TYPEID DARROW expr ';' 
+
+	TYPEID  shift 136
+	.  error
+
+
+state 131
+	feature:  OBJECTID '(' formals ')' ':' TYPEID '{' expr '}' ';'.    (11)
+
+	.  reduce 11 (src line 131)
+
+
+state 132
+	feature:  OBJECTID '(' formals error ')' ':' TYPEID '{' expr '}'.    (14)
+
+	.  reduce 14 (src line 138)
+
+
+state 133
+	expr:  expr '@' TYPEID '.' OBJECTID '('.maybeexprs ')' 
+	maybeexprs: .    (45)
+
+	BOOL  shift 51
+	CASE  shift 43
+	IF  shift 39
+	ISVOID  shift 45
+	LET  shift 42
+	NEW  shift 44
+	NOT  shift 47
+	NUM  shift 49
+	OBJECTID  shift 38
+	STRING  shift 50
+	WHILE  shift 40
+	'~'  shift 46
+	'{'  shift 41
+	'('  shift 48
+	.  reduce 45 (src line 230)
+
+	expr  goto 91
+	exprs  goto 90
+	maybeexprs  goto 137
+
+state 134
+	expr:  expr '.' OBJECTID '(' maybeexprs ')'.    (24)
+
+	.  reduce 24 (src line 183)
+
+
+state 135
+	expr:  expr.'@' TYPEID '.' OBJECTID '(' maybeexprs ')' 
+	expr:  expr.'.' OBJECTID '(' maybeexprs ')' 
+	expr:  IF expr THEN expr ELSE expr.FI 
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+	expr:  expr.CMP expr 
+
+	CMP  shift 61
+	FI  shift 138
+	'+'  shift 57
+	'-'  shift 58
+	'*'  shift 59
+	'/'  shift 60
+	'@'  shift 55
+	'.'  shift 56
+	.  error
+
+
+state 136
+	branch:  OBJECTID ':' TYPEID.DARROW expr ';' 
+
+	DARROW  shift 139
+	.  error
+
+
+state 137
+	expr:  expr '@' TYPEID '.' OBJECTID '(' maybeexprs.')' 
+
+	')'  shift 140
+	.  error
+
+
+state 138
+	expr:  IF expr THEN expr ELSE expr FI.    (26)
+
+	.  reduce 26 (src line 187)
+
+
+state 139
+	branch:  OBJECTID ':' TYPEID DARROW.expr ';' 
+
+	BOOL  shift 51
+	CASE  shift 43
+	IF  shift 39
+	ISVOID  shift 45
+	LET  shift 42
+	NEW  shift 44
+	NOT  shift 47
+	NUM  shift 49
+	OBJECTID  shift 38
+	STRING  shift 50
+	WHILE  shift 40
+	'~'  shift 46
+	'{'  shift 41
+	'('  shift 48
+	.  error
+
+	expr  goto 141
+
+state 140
+	expr:  expr '@' TYPEID '.' OBJECTID '(' maybeexprs ')'.    (23)
+
+	.  reduce 23 (src line 181)
+
+
+state 141
+	expr:  expr.'@' TYPEID '.' OBJECTID '(' maybeexprs ')' 
+	expr:  expr.'.' OBJECTID '(' maybeexprs ')' 
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+	expr:  expr.CMP expr 
+	branch:  OBJECTID ':' TYPEID DARROW expr.';' 
+
+	CMP  shift 61
+	'+'  shift 57
+	'-'  shift 58
+	'*'  shift 59
+	'/'  shift 60
+	'@'  shift 55
+	'.'  shift 56
+	';'  shift 142
+	.  error
+
+
+state 142
+	branch:  OBJECTID ':' TYPEID DARROW expr ';'.    (58)
+
+	.  reduce 58 (src line 274)
+
+
+44 terminals, 19 nonterminals
+59 grammar rules, 143/2000 states
+0 shift/reduce, 0 reduce/reduce conflicts reported
+68 working sets used
+memory: parser 54/30000
+68 extra closures
+604 shift entries, 5 exceptions
+49 goto entries
+4 entries saved by goto default
+Optimizer space used: output 321/30000
+321 table entries, 39 zero
+maximum spread: 44, maximum offset: 139
