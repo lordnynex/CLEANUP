@@ -1,0 +1,51 @@
+1.0.0
+ * Use cqlsh to backup schema instead of depreciated cassandra-cli
+ * AWS IAM role support
+ * lzop decompression for the restore command
+ * add argument to pass an SSH key file
+ * Get --keyspaces working with multiple keyspaces
+ * Fixing sstableloader path and data directory for recovery
+ * Added exclude tables option
+ * Make upload_file robust against failures of all kinds
+ * Added support for S3 reduced redundancy and S3 upload speed limiter
+ 
+0.4.0
+ * Use sudo on cassandra nodes only if --use-sudo option is provided
+ * Adjust buffer size for S3 uploads (match with compressed fragments)
+ * Added support for cassandra mutilple data directory
+ * Removed --data-path cmdline option
+ * Added --conf-path cmdline option (tells where cassandra.yml is located)
+
+0.3.1
+ * Fix bug with missing manifest file on S3 (--prefix)
+
+0.3.0
+ * Configurable SSH port
+ * Change agent put from multiprocessing to threading
+ * Upload retries
+ * Cleanup failed multipart uploads (remove parts from S3)
+ * Add upload timeout (fails if uploading 60MB takes more than 600s)
+ * Use ssh config
+
+0.2.5
+ * remove some S3 addictional charges coming from not necessary bucket validation
+
+0.2.4
+ * add support for S3 server side encryption
+
+0.2.3
+ * fix bug with upload manifest and some weird fabric / boto version combination
+ * fix problems with non us-west S3 buckets (s3 region is now an explicit parameter)
+
+0.2.2
+ * fix bug with install requirements
+
+0.2.1
+ * add support for password authentication
+
+0.2.0
+ * Compress backups with lzop
+ * Upload files using a python agent installed on nodes
+ * Add restore from S3 to cluster (using sstableloader)
+ * Add support for thrift schema backups (via cassandra-cli)
+ * Configurable connection pool size option
