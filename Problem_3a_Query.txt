@@ -1,0 +1,210 @@
+SELECT MAXTRIPCOUNTSUM.MAXDAY AS MAXDAY, (1.0*MAXTRIPCOUNTSUM.NUMBERCNTSUM)/TOTAL.TOTALCNT
+FROM (SELECT MAXTRIPCOUNT1.MAXDAY AS MAXDAY, SUM(MAXTRIPCOUNT2.NUMBERCNT) AS NUMBERCNTSUM
+	FROM (SELECT PERSONMAXTRIP.MAXDAY AS MAXDAY, COUNT(*) AS NUMBERCNT
+		FROM (SELECT PERSONMILES.HOUSEID AS HOUSEID, PERSONMILES.PERSONID AS PERSONID, 5*(ROUND(((SUM(PERSONMILES.TRPMILES))/5)+1)) AS MAXDAY
+			FROM (
+				(SELECT HOUSEID, 1 AS PERSONID, TRPMILES
+				FROM DAYTRIP
+				WHERE ONTD_P1 = 1)
+				UNION
+                               (SELECT HOUSEID, 2 AS PERSONID, TRPMILES 
+                                FROM DAYTRIP
+                                WHERE ONTD_P1 = 2)
+                                UNION					
+                               (SELECT HOUSEID, 3 AS PERSONID, TRPMILES 
+                                FROM DAYTRIP
+                                WHERE ONTD_P1 = 3)
+                                UNION
+                               (SELECT HOUSEID, 4 AS PERSONID, TRPMILES 
+                                FROM DAYTRIP
+                                WHERE ONTD_P1 = 4)
+                                UNION
+                               (SELECT HOUSEID, 5 AS PERSONID, TRPMILES 
+                                FROM DAYTRIP
+                                WHERE ONTD_P1 = 5)
+                                UNION
+                               (SELECT HOUSEID, 6 AS PERSONID, TRPMILES 
+                                FROM DAYTRIP
+                                WHERE ONTD_P1 = 6)
+                                UNION
+                               (SELECT HOUSEID, 7 AS PERSONID, TRPMILES 
+                                FROM DAYTRIP
+                                WHERE ONTD_P1 = 7)
+                                UNION
+                               (SELECT HOUSEID, 8 AS PERSONID, TRPMILES 
+                                FROM DAYTRIP
+                                WHERE ONTD_P1 = 8)
+                                UNION
+                               (SELECT HOUSEID, 9 AS PERSONID, TRPMILES 
+                                FROM DAYTRIP
+                                WHERE ONTD_P1 = 9)
+                                UNION
+                               (SELECT HOUSEID, 10 AS PERSONID, TRPMILES 
+                                FROM DAYTRIP
+                                WHERE ONTD_P1 = 10)
+                                UNION
+                               (SELECT HOUSEID, 11 AS PERSONID, TRPMILES 
+                                FROM DAYTRIP
+                                WHERE ONTD_P1 = 11)
+                                UNION
+                               (SELECT HOUSEID, 12 AS PERSONID, TRPMILES 
+                                FROM DAYTRIP
+                                WHERE ONTD_P1 = 12)
+                                UNION
+                               (SELECT HOUSEID, 13 AS PERSONID, TRPMILES 
+                                FROM DAYTRIP
+                                WHERE ONTD_P1 = 13)
+                                UNION
+                               (SELECT HOUSEID, 14 AS PERSONID, TRPMILES 
+                                FROM DAYTRIP
+                                WHERE ONTD_P1 = 14)
+                                UNION
+                               (SELECT HOUSEID, 15 AS PERSONID, TRPMILES 
+                                FROM DAYTRIP
+                                WHERE ONTD_P1 = 15)) PERSONMILES
+			WHERE PERSONMILES.TRPMILES>0
+			GROUP BY PERSONMILES.HOUSEID, PERSONMILES.PERSONID
+			) PERSONMAXTRIP
+		GROUP BY PERSONMAXTRIP.MAXDAY
+		) MAXTRIPCOUNT1,
+		(SELECT PERSONMAXTRIP.MAXDAY AS MAXDAY, COUNT(*) AS NUMBERCNT
+		FROM (SELECT PERSONMILES.HOUSEID AS HOUSEID, PERSONMILES.PERSONID AS PERSONID, 5*(ROUND(((SUM(PERSONMILES.TRPMILES))/5)+1)) AS MAXDAY
+			FROM (
+				(SELECT HOUSEID, 1 AS PERSONID, TRPMILES
+				FROM DAYTRIP
+				WHERE ONTD_P1 = 1)
+				UNION
+                               (SELECT HOUSEID, 2 AS PERSONID, TRPMILES 
+                                FROM DAYTRIP
+                                WHERE ONTD_P1 = 2)
+                                UNION					
+                               (SELECT HOUSEID, 3 AS PERSONID, TRPMILES 
+                                FROM DAYTRIP
+                                WHERE ONTD_P1 = 3)
+                                UNION
+                               (SELECT HOUSEID, 4 AS PERSONID, TRPMILES 
+                                FROM DAYTRIP
+                                WHERE ONTD_P1 = 4)
+                                UNION
+                               (SELECT HOUSEID, 5 AS PERSONID, TRPMILES 
+                                FROM DAYTRIP
+                                WHERE ONTD_P1 = 5)
+                                UNION
+                               (SELECT HOUSEID, 6 AS PERSONID, TRPMILES 
+                                FROM DAYTRIP
+                                WHERE ONTD_P1 = 6)
+                                UNION
+                               (SELECT HOUSEID, 7 AS PERSONID, TRPMILES 
+                                FROM DAYTRIP
+                                WHERE ONTD_P1 = 7)
+                                UNION
+                               (SELECT HOUSEID, 8 AS PERSONID, TRPMILES 
+                                FROM DAYTRIP
+                                WHERE ONTD_P1 = 8)
+                                UNION
+                               (SELECT HOUSEID, 9 AS PERSONID, TRPMILES 
+                                FROM DAYTRIP
+                                WHERE ONTD_P1 = 9)
+                                UNION
+                               (SELECT HOUSEID, 10 AS PERSONID, TRPMILES 
+                                FROM DAYTRIP
+                                WHERE ONTD_P1 = 10)
+                                UNION
+                               (SELECT HOUSEID, 11 AS PERSONID, TRPMILES 
+                                FROM DAYTRIP
+                                WHERE ONTD_P1 = 11)
+                                UNION
+                               (SELECT HOUSEID, 12 AS PERSONID, TRPMILES 
+                                FROM DAYTRIP
+                                WHERE ONTD_P1 = 12)
+                                UNION
+                               (SELECT HOUSEID, 13 AS PERSONID, TRPMILES 
+                                FROM DAYTRIP
+                                WHERE ONTD_P1 = 13)
+                                UNION
+                               (SELECT HOUSEID, 14 AS PERSONID, TRPMILES 
+                                FROM DAYTRIP
+                                WHERE ONTD_P1 = 14)
+                                UNION
+                               (SELECT HOUSEID, 15 AS PERSONID, TRPMILES 
+                                FROM DAYTRIP
+                                WHERE ONTD_P1 = 15)) PERSONMILES
+			WHERE PERSONMILES.TRPMILES>0
+			GROUP BY PERSONMILES.HOUSEID, PERSONMILES.PERSONID
+			) PERSONMAXTRIP
+		GROUP BY PERSONMAXTRIP.MAXDAY
+		) MAXTRIPCOUNT2
+	WHERE MAXTRIPCOUNT1.MAXDAY>=MAXTRIPCOUNT2.MAXDAY
+	GROUP BY MAXTRIPCOUNT1.MAXDAY
+	ORDER BY MAXTRIPCOUNT1.MAXDAY) MAXTRIPCOUNTSUM,
+	(SELECT SUM(MAXTRIPCOUNT2.NUMBERCNT) AS TOTALCNT
+	FROM (SELECT PERSONMAXTRIP.MAXDAY AS MAXDAY, COUNT(*) AS NUMBERCNT
+		FROM (SELECT PERSONMILES.HOUSEID AS HOUSEID, PERSONMILES.PERSONID AS PERSONID, 5*(ROUND(((SUM(PERSONMILES.TRPMILES))/5)+1)) AS MAXDAY
+			FROM (
+				(SELECT HOUSEID, 1 AS PERSONID, TRPMILES
+				FROM DAYTRIP
+				WHERE ONTD_P1 = 1)
+				UNION
+                               (SELECT HOUSEID, 2 AS PERSONID, TRPMILES 
+                                FROM DAYTRIP
+                                WHERE ONTD_P1 = 2)
+                                UNION					
+                               (SELECT HOUSEID, 3 AS PERSONID, TRPMILES 
+                                FROM DAYTRIP
+                                WHERE ONTD_P1 = 3)
+                                UNION
+                               (SELECT HOUSEID, 4 AS PERSONID, TRPMILES 
+                                FROM DAYTRIP
+                                WHERE ONTD_P1 = 4)
+                                UNION
+                               (SELECT HOUSEID, 5 AS PERSONID, TRPMILES 
+                                FROM DAYTRIP
+                                WHERE ONTD_P1 = 5)
+                                UNION
+                               (SELECT HOUSEID, 6 AS PERSONID, TRPMILES 
+                                FROM DAYTRIP
+                                WHERE ONTD_P1 = 6)
+                                UNION
+                               (SELECT HOUSEID, 7 AS PERSONID, TRPMILES 
+                                FROM DAYTRIP
+                                WHERE ONTD_P1 = 7)
+                                UNION
+                               (SELECT HOUSEID, 8 AS PERSONID, TRPMILES 
+                                FROM DAYTRIP
+                                WHERE ONTD_P1 = 8)
+                                UNION
+                               (SELECT HOUSEID, 9 AS PERSONID, TRPMILES 
+                                FROM DAYTRIP
+                                WHERE ONTD_P1 = 9)
+                                UNION
+                               (SELECT HOUSEID, 10 AS PERSONID, TRPMILES 
+                                FROM DAYTRIP
+                                WHERE ONTD_P1 = 10)
+                                UNION
+                               (SELECT HOUSEID, 11 AS PERSONID, TRPMILES 
+                                FROM DAYTRIP
+                                WHERE ONTD_P1 = 11)
+                                UNION
+                               (SELECT HOUSEID, 12 AS PERSONID, TRPMILES 
+                                FROM DAYTRIP
+                                WHERE ONTD_P1 = 12)
+                                UNION
+                               (SELECT HOUSEID, 13 AS PERSONID, TRPMILES 
+                                FROM DAYTRIP
+                                WHERE ONTD_P1 = 13)
+                                UNION
+                               (SELECT HOUSEID, 14 AS PERSONID, TRPMILES 
+                                FROM DAYTRIP
+                                WHERE ONTD_P1 = 14)
+                                UNION
+                               (SELECT HOUSEID, 15 AS PERSONID, TRPMILES 
+                                FROM DAYTRIP
+                                WHERE ONTD_P1 = 15)) PERSONMILES
+			WHERE PERSONMILES.TRPMILES>0
+			GROUP BY PERSONMILES.HOUSEID, PERSONMILES.PERSONID
+			) PERSONMAXTRIP
+		GROUP BY PERSONMAXTRIP.MAXDAY
+		) MAXTRIPCOUNT2) TOTAL
+	WHERE MAXDAY<101;
+	
+	
