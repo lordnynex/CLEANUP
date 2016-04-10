@@ -1,0 +1,44 @@
+#! /bin/bash
+
+useage() 
+{
+	echo "useage:"
+	echo "	nginxctl [start|stop|reload|restart]"
+}
+
+if [ $# -lt 1 ]; then
+	useage
+fi
+
+EXEC=$0
+dirname=`dirname $EXEC`
+BASE=`cd $dirname/../ && pwd`
+
+echo "BASEDIR: "$BASE
+
+NGINX="/home/admin/cai/sbin/nginx -p $BASE -c $BASE/conf/nginx.conf"
+FCGI="$BASE/bin/perl_fcgi_ctl.sh"
+
+case $1 in
+	start)
+	echo $NGINX
+	$NGINX
+	;;
+	stop)
+	echo $NGINX" -s stop"
+	$NGINX -s stop
+	;;
+	reload)
+	echo $NGINX" -s reload"
+	$NGINX -s reload
+	;;
+	restart)
+	echo $NGINX" -s stop"
+	$NGINX -s stop
+	echo $NGINX
+	$NGINX
+	;;
+	*)
+	useage
+	exit -1
+esac
