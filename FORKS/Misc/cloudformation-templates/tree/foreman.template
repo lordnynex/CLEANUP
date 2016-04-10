@@ -1,0 +1,315 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+
+  "Description" : "AWS CloudFormation template to spin up a Puppetmaster and Foreman server on Ubuntu 12.04",
+
+  "Parameters" : {
+
+    "KeyName" : {
+      "Default" : "drupal-demo-keypair",
+      "Description" : "Name of an existing EC2 SSH KeyPair",
+      "Type" : "String",
+      "MinLength": "1",
+      "MaxLength": "64",
+      "AllowedPattern" : "[-_ a-zA-Z0-9]*",
+      "ConstraintDescription" : "can contain only alphanumeric characters, spaces, dashes and underscores."
+    },  
+
+    "InstanceType" : {
+      "Description" : "WebServer EC2 instance type",
+      "Type" : "String",
+      "Default" : "c1.medium",
+      "AllowedValues" : [ "t1.micro","m1.small","m1.medium","m1.large","m1.xlarge","m2.xlarge","m2.2xlarge","m2.4xlarge","c1.medium","c1.xlarge"],
+      "ConstraintDescription" : "must be a valid EC2 instance type."
+    },
+ 
+    "AvailabilityZone" : {
+      "Default" : "us-east-1b",
+      "Description" : "Name of availability zone",      "Type" : "String",
+      "MinLength": "1",
+      "MaxLength": "64",
+      "AllowedValues" : ["us-east-1a", "us-east-1b","us-east-1c","us-east-1d","us-east-1e",
+                         "us-west-1a", "us-west-1b", "us-west-1c",
+                         "us-west-2a", "us-west-2b",
+                         "eu-west-1a", "eu-west-1b", "eu-west-1c",
+                         "ap-southeast-1a", "ap-southeast-1b",
+                         "ap-northeast-1a", "ap-northeast-1b",
+                         "sa-east-1a", "sa-east-1b"
+                         ],
+      "ConstraintDescription" : "must be a valid availability zone."
+    },
+    "DBName": {
+      "Default": "foremandb",
+      "Description" : "The Foreman database name",
+      "Type": "String",
+      "MinLength": "1",
+      "MaxLength": "64",
+      "AllowedPattern" : "[a-zA-Z][a-zA-Z0-9]*",
+      "ConstraintDescription" : "must begin with a letter and contain only alphanumeric characters."
+    },
+    
+    "DBUsername": {
+      "Default": "foreman",
+      "NoEcho": "true",
+      "Description" : "The Foreman database username",
+      "Type": "String",
+      "MinLength": "1",
+      "MaxLength": "16",
+      "AllowedPattern" : "[a-zA-Z][a-zA-Z0-9]*",
+      "ConstraintDescription" : "must begin with a letter and contain only alphanumeric characters."
+    },
+    
+    "DBPassword": {
+      "Default": "admin",
+      "NoEcho": "true",
+      "Description" : "The Foreman database account password",
+      "Type": "String",
+      "MinLength": "1",
+      "MaxLength": "41",
+      "AllowedPattern" : "[a-zA-Z0-9]*",
+      "ConstraintDescription" : "must contain only alphanumeric characters."
+    },
+
+    "DBRootPassword": {
+      "NoEcho": "true",
+      "Description" : "Root password for MySQL",
+      "Type": "String",
+      "MinLength": "1",
+      "MaxLength": "41",
+      "AllowedPattern" : "[a-zA-Z0-9]*",
+      "ConstraintDescription" : "must contain only alphanumeric characters."
+    }
+  },
+
+  "Mappings" : {
+    "AWSInstanceType2Arch" : {
+      "t1.micro"    : { "Arch" : "64" },
+      "m1.small"    : { "Arch" : "64" },
+      "m1.medium"   : { "Arch" : "64" },
+      "m1.large"    : { "Arch" : "64" },
+      "m1.xlarge"   : { "Arch" : "64" },
+      "m2.xlarge"   : { "Arch" : "64" },
+      "m2.2xlarge"  : { "Arch" : "64" },
+      "m2.4xlarge"  : { "Arch" : "64" },
+      "c1.medium"   : { "Arch" : "64" },
+      "c1.xlarge"   : { "Arch" : "64" }
+    },
+
+    "AWSRegionArch2AMI" : {
+      "us-east-1"      : { "64" : "ami-a29943cb" },
+      "us-west-1"      : { "64" : "ami-87712ac2" },
+      "us-west-2"      : { "64" : "ami-20800c10" },
+      "eu-west-1"      : { "64" : "ami-e1e8d395" },
+      "ap-southeast-1" : { "64" : "ami-a4ca8df6" },
+      "ap-northeast-1" : { "64" : "ami-60c77761" },
+      "sa-east-1"      : { "64" : "ami-8cd80691" }
+    }
+  },
+    
+  "Resources" : {
+
+    "CfnUser" : {
+      "Type" : "AWS::IAM::User",
+      "Properties" : {
+        "Path": "/",
+        "Policies": [{
+          "PolicyName": "root",
+          "PolicyDocument": { "Statement":[{
+            "Effect":"Allow",
+            "Action":"cloudformation:DescribeStackResource",
+            "Resource":"*"
+          }]}
+        }]
+      }
+    },
+
+    "HostKeys" : {
+      "Type" : "AWS::IAM::AccessKey",
+      "Properties" : {
+        "UserName" : {"Ref": "CfnUser"}
+      }
+    },
+
+    "PuppetmasterNodesSg" : {
+      "Type" : "AWS::EC2::SecurityGroup",
+      "Properties" : {
+        "GroupDescription" : "Foreman and puppetmaster Nodes",
+        "SecurityGroupIngress" : [
+          {
+            "IpProtocol" : "tcp",
+            "FromPort" : "80",
+            "ToPort" : "80",
+            "CidrIp" : "0.0.0.0/0"
+          },
+          {
+            "IpProtocol" : "tcp",
+            "FromPort" : "443",
+            "ToPort" : "443",
+            "CidrIp" : "0.0.0.0/0"
+          },
+          {
+            "IpProtocol" : "tcp",
+            "FromPort" : "8140",
+            "ToPort" : "8140",
+            "CidrIp" : "0.0.0.0/0"
+          },
+          {
+            "IpProtocol" : "tcp",
+            "FromPort" : "22",
+            "ToPort" : "22",
+            "CidrIp" : "0.0.0.0/0"
+          }
+        ]
+      }
+    },
+
+    "ForemanServer": {  
+      "Type": "AWS::EC2::Instance",
+      "Metadata" : {
+        "AWS::CloudFormation::Init" : {
+          "config" : {
+            "packages" : {
+              "apt" : {
+                "ruby"            : [],
+                "ruby-dev"        : [],
+                "libopenssl-ruby" : [],
+                "rdoc"            : [],
+                "ri"              : [],
+                "irb"             : [],
+                "build-essential" : [],
+                "wget"            : [],
+                "ssl-cert"        : [],
+                "rubygems"        : [],
+                "git"             : [],
+                "s3cmd"           : []
+              }
+            }
+          }
+        }
+      },
+      "Properties" : {
+        "ImageId" : { 
+          "Fn::FindInMap" : [ "AWSRegionArch2AMI", { "Ref" : "AWS::Region" }, 
+            { "Fn::FindInMap" : [ "AWSInstanceType2Arch", { "Ref" : "InstanceType" }, "Arch" ] } ] },
+        "InstanceType"   : { "Ref" : "InstanceType" },
+        "KeyName"        : { "Ref" : "KeyName" },
+        "AvailabilityZone" : { "Ref" : "AvailabilityZone" },
+        "SecurityGroupIds" : [ { "Ref" : "PuppetmasterNodesSg" } ],
+        "UserData"       : { "Fn::Base64" : { "Fn::Join" : ["", [
+          "#!/bin/bash -v\n",
+          "function error_exit\n",
+          "{\n",
+          "  cfn-signal -e 1 -r \"$1\" '", { "Ref" : "ForemanServerWaitHandle" }, "'\n",
+          "  exit 1\n",
+          "}\n",
+
+          "apt-get -y update\n",
+          "apt-get -y install python-setuptools\n",
+          "easy_install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-1.0-6.tar.gz\n",
+          "cfn-init --region ", { "Ref" : "AWS::Region" },
+          "    -s ", { "Ref" : "AWS::StackName" }, " -r ForemanServer ",
+          "         --access-key ", { "Ref" : "HostKeys" },
+          "         --secret-key ", {"Fn::GetAtt": ["HostKeys", "SecretAccessKey"]}, " || error_exit 'Failed to run cfn-init'\n",
+
+          "apt-get -y dist-upgrade\n",
+
+          "# Install MySQL",
+          "echo mysql-server-5.1 mysql-server/root_password password ", {"Ref" : "DBRootPassword"}, " | debconf-set-selections\n",
+          "echo mysql-server-5.1 mysql-server/root_password seen true | debconf-set-selections\n",
+          "echo mysql-server-5.1 mysql-server/root_password_again password ", {"Ref" : "DBRootPassword"}, " | debconf-set-selections\n",
+          "echo mysql-server-5.1 mysql-server/root_password_again seen true | debconf-set-selections\n",
+          "echo mysql-server-5.1 mysql-server/start_on_boot boolean true | debconf-set-selections\n",
+          "apt-get -y install mysql-server-5.1\n",
+          "apt-get -y install libmysqlclient-dev\n",
+
+          "# Update Rubygems, and install puppet, rake, and ruby-libvrt\n",
+          "gem install --no-rdoc --no-ri rubygems-update\n",
+          "update_rubygems\n",
+          "gem install --no-rdoc --no-ri puppet\n",
+          "gem install --no-rdoc --no-ri rake\n",
+          "gem install --no-rdoc --no-ri ruby-libvirt\n",
+
+          "# Placeholder to configure puppetmaster\n",
+
+          "# Placeholder to install, setup and configure storeconfigs\n",
+
+          "# Placeholder to setup dns (Will do as a route53 resource, based on a parameter name.\n",
+
+          "# Placeholder to create the foreman user\n",
+
+          "# Install Foreman latest code from github\n",
+          "cd /var/www/\n",
+          "git clone https://github.com/theforeman/foreman.git -b develop\n",
+          "cd foreman\n",
+          "gem install --no-rdoc --no-ri bundle\n",
+          "apt-get -y install libxml2-dev libxslt-dev libvirt-dev\n",
+          "apt-get -y install libsqlite3-dev\n",
+          "#bundle install --without mysql postgresql sqlite test development --path vendor\n",
+          "bundle install --without mysql postgresql test development --path vendor\n",
+          "cp config/settings.yaml.example config/settings.yaml\n",
+          "RAILS_ENV=production bundle exec rake db:migrate # (to set up database schema)\n",
+
+          "# Placeholder to move foreman to a proper location and change the file ownerships\n",
+
+          "# Placeholder to convert sqllite to mysql. Need to figure out which gem mysql or mysql2.\n",
+
+          "# Placeholder to replace webrick with passenger. What about REE?\n",
+          "#apt-get -y install apache2-mpm-prefork apache2-prefork-dev libcurl4-openssl-dev\n",
+          "chown www-data:www-data /var/www/foreman -R\n",
+
+          "gem install --no-rdoc --no-ri passenger --version 3.0.11\n",
+          "passenger-install-apache2-module -a\n",
+
+          "#apt-get -y install libapache2-mod-passenger\n",
+          "echo LoadModule passenger_module /usr/lib/ruby/gems/1.8/gems/passenger-3.0.11/ext/apache2/mod_passenger.so PassengerRoot >> /etc/apache2/apche2.conf\n",
+          "cat > /etc/apache2/sites-available/foreman-server <<EOF\n",
+          "<VirtualHost *:80>\n",
+          "ServerAdmin user@domain.com\n",
+          "ServerName puppet.domain.com\n",
+          "DocumentRoot /var/www/foreman/public\n",
+          "\n",
+          "<Directory \"/var/www/foreman/public\">\n",
+          "      AllowOverride all\n",
+          "      Order deny,allow\n",
+          "      Allow from all\n",
+          "      Options -MultiViews\n",
+          "</Directory>\n",
+          "\n",
+          "</VirtualHost>\n",
+          "EOF\n",
+
+          "# Placeholder to get puppetreports working\n",
+
+          "# Start Foreman. Should be replaced by sysvinit\n",
+          "RAILS_ENV=production ./script/rails s -d\n",
+
+          "# If all went well, signal success\n",
+          "cfn-signal -e $? -r 'Foreman Server configuration' '", { "Ref" : "ForemanServerWaitHandle" }, "'\n"
+        ]]}}
+      }
+    },
+
+    "ForemanServerWaitHandle" : {
+      "Type" : "AWS::CloudFormation::WaitConditionHandle"
+    },
+
+    "ForemanServerWaitCondition" : {
+      "Type" : "AWS::CloudFormation::WaitCondition",
+      "DependsOn" : "ForemanServer",
+      "Properties" : {
+        "Handle"  : { "Ref" : "ForemanServerWaitHandle" },
+        "Timeout" : "1200"
+      }
+    }
+
+  },
+
+  "Outputs" : {
+
+    "PublicDNSName" : {
+      "Description" : "Foreman server",
+      "Value" : { "Fn::GetAtt" : [ "ForemanServer", "PublicDnsName" ] }
+    }
+  }
+
+}  

@@ -1,0 +1,185 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+
+  "Description" : "AWS CloudFormation template to spin up a Cassandra Seed node on Ubuntu 11.10",
+
+  "Parameters" : {
+
+    "KeyName" : {
+      "Default" : "drupal-demo-keypair",
+      "Description" : "Name of an existing EC2 SSH KeyPair",
+      "Type" : "String",
+      "MinLength": "1",
+      "MaxLength": "64",
+      "AllowedPattern" : "[-_ a-zA-Z0-9]*",
+      "ConstraintDescription" : "can contain only alphanumeric characters, spaces, dashes and underscores."
+    },  
+
+    "InstanceType" : {
+      "Description" : "WebServer EC2 instance type",
+      "Type" : "String",
+      "Default" : "c1.medium",
+      "AllowedValues" : [ "t1.micro","m1.small","m1.medium","m1.large","m1.xlarge","m2.xlarge","m2.2xlarge","m2.4xlarge","c1.medium","c1.xlarge"],
+      "ConstraintDescription" : "must be a valid EC2 instance type."
+    },
+ 
+    "AvailabilityZone" : {
+      "Default" : "us-east-1b",
+      "Description" : "Name of availability zone",      "Type" : "String",
+      "MinLength": "1",
+      "MaxLength": "64",
+      "AllowedValues" : ["us-east-1a", "us-east-1b","us-east-1c","us-east-1d","us-east-1e",
+                         "us-west-1a", "us-west-1b", "us-west-1c",
+                         "us-west-2a", "us-west-2b",
+                         "eu-west-1a", "eu-west-1b", "eu-west-1c",
+                         "ap-southeast-1a", "ap-southeast-1b",
+                         "ap-northeast-1a", "ap-northeast-1b",
+                         "sa-east-1a", "sa-east-1b"
+                         ],
+      "ConstraintDescription" : "must be a valid availability zone."
+    },
+
+    "SecurityGroupIds" : {
+      "Default" : "cassandra",
+      "Description" : "Name of security group",      "Type" : "String",
+      "MinLength": "1",
+      "MaxLength": "64",
+      "AllowedPattern" : "[-_ a-zA-Z0-9]*",
+      "ConstraintDescription" : "can contain only alphanumeric characters, spaces, dashes and underscores."
+    }
+  },
+
+  "Mappings" : {
+    "AWSInstanceType2Arch" : {
+      "t1.micro"    : { "Arch" : "64" },
+      "m1.small"    : { "Arch" : "64" },
+      "m1.medium"   : { "Arch" : "64" },
+      "m1.large"    : { "Arch" : "64" },
+      "m1.xlarge"   : { "Arch" : "64" },
+      "m2.xlarge"   : { "Arch" : "64" },
+      "m2.2xlarge"  : { "Arch" : "64" },
+      "m2.4xlarge"  : { "Arch" : "64" },
+      "c1.medium"   : { "Arch" : "64" },
+      "c1.xlarge"   : { "Arch" : "64" }
+    },
+
+    "AWSRegionArch2AMI" : {
+      "us-east-1"      : { "64" : "ami-baba68d3" },
+      "us-west-1"      : { "64" : "ami-6da8f128" },
+      "us-west-2"      : { "64" : "ami-ae05889e" },
+      "eu-west-1"      : { "64" : "ami-895069fd" },
+      "ap-southeast-1" : { "64" : "ami-4296d210" },
+      "ap-northeast-1" : { "64" : "ami-10299f11" },
+      "sa-east-1"      : { "64" : "ami-b673acab" }
+    }
+  },
+    
+  "Resources" : {
+
+    "CfnUser" : {
+      "Type" : "AWS::IAM::User",
+      "Properties" : {
+        "Path": "/",
+        "Policies": [{
+          "PolicyName": "root",
+          "PolicyDocument": { "Statement":[{
+            "Effect":"Allow",
+            "Action":"cloudformation:DescribeStackResource",
+            "Resource":"*"
+          }]}
+        }]
+      }
+    },
+
+    "HostKeys" : {
+      "Type" : "AWS::IAM::AccessKey",
+      "Properties" : {
+        "UserName" : {"Ref": "CfnUser"}
+      }
+    },
+
+    "CassandraSeedServer": {  
+      "Type": "AWS::EC2::Instance",
+      "Metadata" : {
+        "AWS::CloudFormation::Init" : {
+          "config" : {
+            "files" : {
+              "/etc/apt/sources.list.d/cassandra.list" : {
+                "content" : { "Fn::Join" : ["", [
+                  "deb http://www.apache.org/dist/cassandra/debian 10x main\n",
+                  "deb-src http://www.apache.org/dist/cassandra/debian 10x main"
+                ]]},
+                "mode" : "000644",
+                "owner"  : "root",
+                "group"  : "root"
+              }
+            }
+          }
+        }
+      },
+      "Properties" : {
+        "ImageId" : { 
+          "Fn::FindInMap" : [ "AWSRegionArch2AMI", { "Ref" : "AWS::Region" }, 
+            { "Fn::FindInMap" : [ "AWSInstanceType2Arch", { "Ref" : "InstanceType" }, "Arch" ] } ] },
+        "InstanceType"   : { "Ref" : "InstanceType" },
+        "KeyName"        : { "Ref" : "KeyName" },
+        "AvailabilityZone" : { "Ref" : "AvailabilityZone" },
+        "SecurityGroupIds" : [ { "Ref" : "SecurityGroupIds" } ],
+        "UserData"       : { "Fn::Base64" : { "Fn::Join" : ["", [
+          "#!/bin/bash -v\n",
+          "function error_exit\n",
+          "{\n",
+          "  cfn-signal -e 1 -r \"$1\" '", { "Ref" : "CassandraSeedServerWaitHandle" }, "'\n",
+          "  exit 1\n",
+          "}\n",
+
+          "apt-get -y install python-setuptools\n",
+          "easy_install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-1.0-6.tar.gz\n",
+          "cfn-init --region ", { "Ref" : "AWS::Region" },
+          "    -s ", { "Ref" : "AWS::StackName" }, " -r CassandraSeedServer ",
+          "         --access-key ", { "Ref" : "HostKeys" },
+          "         --secret-key ", {"Fn::GetAtt": ["HostKeys", "SecretAccessKey"]}, " || error_exit 'Failed to run cfn-init'\n",
+
+          "apt-get -y update\n",
+          "apt-get -y dist-upgrade\n",
+          "gpg --keyserver pgp.mit.edu --recv-keys F758CE318D77295D\n",
+          "gpg --export --armor F758CE318D77295D | sudo apt-key add -\n",
+          "gpg --keyserver pgp.mit.edu --recv-keys 2B5C1B00\n",
+          "gpg --export --armor 2B5C1B00 | sudo apt-key add -\n",
+          "apt-get -y update\n",
+          "apt-get -y install cassandra\n",
+
+          "#/etc/init.d/cassandra stop\n",
+          "#rm /var/lib/cassandra/commitlog/*\n",
+          "#rm -r /var/lib/cassandra/data/\n",
+
+          "# If all went well, signal success\n",
+          "cfn-signal -e $? -r 'Cassandra Seed Server configuration' '", { "Ref" : "CassandraSeedServerWaitHandle" }, "'\n"
+        ]]}}
+      }
+    },
+
+    "CassandraSeedServerWaitHandle" : {
+      "Type" : "AWS::CloudFormation::WaitConditionHandle"
+    },
+
+    "CassandraSeedServerWaitCondition" : {
+      "Type" : "AWS::CloudFormation::WaitCondition",
+      "DependsOn" : "CassandraSeedServer",
+      "Properties" : {
+        "Handle"  : { "Ref" : "CassandraSeedServerWaitHandle" },
+        "Timeout" : "1200"
+      }
+    }
+
+  },
+
+  "Outputs" : {
+
+    "PublicDNSName" : {
+      "Description" : "Cassandra seed server",
+      "Value" : { "Fn::GetAtt" : [ "CassandraSeedServer", "PublicDnsName" ] }
+    }
+  }
+
+}  
