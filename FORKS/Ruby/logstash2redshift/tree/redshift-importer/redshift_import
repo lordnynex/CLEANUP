@@ -1,0 +1,30 @@
+#!/bin/bash
+
+dhost=dhost-$(hostname)
+image=redshift-import
+container_name=redshift-import
+
+
+if [ "$1" == "run" ]; then
+    docker run --restart=always --hostname=${dhost} --name ${container_name} -v /opt/redshift_logs:/opt/redshift_logs -v /var/log/:/var/log/ -it -d ${image}
+elif [ "$1" == "start" ]; then
+    docker start ${container_name}
+elif [ "$1" == "stop" ]; then
+    docker stop ${container_name}
+elif [ "$1" == "restart" ]; then
+    docker restart ${container_name}
+elif [ "$1" == "rm" ]; then
+    docker rm ${container_name}
+elif [ "$1" == "tail" ]; then
+    docker logs -f --tail=20 ${container_name}
+elif [ "$1" == "build" ]; then
+    docker build -t ${image}:latest .
+elif [ "$1" == "deploy" ]; then
+    git pull;
+    docker build -t ${image}:latest .;
+    docker stop ${container_name};
+    docker rm ${container_name};
+    docker run --restart=always --hostname=${dhost} --name ${container_name} -v /opt/redshift_logs:/opt/redshift_logs -v /var/log/:/var/log/ -it -d ${image}
+else
+    docker ps
+fi

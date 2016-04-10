@@ -1,0 +1,22 @@
+#!/bin/bash
+
+dhost=dhost-$(hostname)
+image=logstash:1.5.3
+container_name=logstash-collector
+
+
+if [ "$1" == "run" ]; then
+    docker run --restart=always --hostname=${dhost} --name ${container_name} -v $(pwd):/config-dir -v /var/log:/var/log -it -d ${image} bash -c "logstash -f /config-dir/logstash.conf"
+elif [ "$1" == "start" ]; then
+    docker start ${container_name}
+elif [ "$1" == "stop" ]; then
+    docker stop ${container_name}
+elif [ "$1" == "restart" ]; then
+    docker restart ${container_name}
+elif [ "$1" == "rm" ]; then
+    docker rm ${container_name}
+elif [ "$1" == "tail" ]; then
+    docker logs -f --tail=20 ${container_name}
+else
+    docker ps
+fi
