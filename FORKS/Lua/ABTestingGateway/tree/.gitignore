@@ -1,0 +1,15 @@
+*~
+*.o
+*.swp
+*_temp/
+*logs/
+*.log
+*.pid
+*.out
+*.rdb
+t/servroot/
+*temp/
+*.sh
+
+*stdout
+
