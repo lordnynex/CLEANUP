@@ -1,0 +1,14 @@
+<html>
+<head>
+<style>
+p {line-height:5px;}
+</style>
+</head>
+<body>
+  <p> Available tables that this server has: </p>
+
+  {{range .mesg -}}
+  <a href=../tables{{.}}><p>{{.}}</p></a>
+  {{end -}}
+</body>
+</html>
