@@ -1,0 +1,33 @@
+
+<div class="pageContent">
+	<form method="post" action="/passport/changepwd_post" class="pageForm required-validate" 
+				onsubmit="return validateCallback(this, dialogAjaxDone);">
+		<div class="pageFormContent" layoutH="60">
+			<p class="row_add">
+				<label class="row_add">旧密码：</label>
+				<input id="old_password" name="old_password" class="required" type="password" size="30"  minlength="4" maxlength="24"/>
+			</p>
+			<p class="row_add">
+				<label class="row_add">新密码：</label>
+				<input id="password" name="password" class="required" type="password" size="30"  minlength="4" maxlength="24"/>
+			</p>
+			<p class="row_add">
+				<label class="row_add">确认新密码：</label>
+				<input id="repassword" name="repassword" class="required" type="password" size="30" equalto="#password"/>
+			</p>
+			
+		</div>
+		<div class="formBar">
+			<ul>
+				<!--<li><a class="buttonActive" href="javascript:;"><span>保存</span></a></li>-->
+				<li><div class="buttonActive"><div class="buttonContent">
+					<button type="submit" >修改</button>
+					</div></div></li>
+				<li>
+					<div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div>
+				</li>
+				<li>&nbsp;&nbsp;&nbsp;&nbsp;</li>
+			</ul>
+		</div>
+	</form>
+</div>

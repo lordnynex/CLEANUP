@@ -1,0 +1,59 @@
+{% local util = require("util.util") %}
+<script language="javascript">
+	{% if errmsg then %}	
+		alertMsg.error("{{errmsg}}");
+	{% end %}
+</script>
+<form id="pagerForm" method="get" action="/role/list">
+	<input type="hidden" name="pageNum" value="{{pageNum}}" />
+	<input type="hidden" name="numPerPage" value="{{numPerPage}}" />
+</form>
+
+<div class="pageContent">
+	<div class="panelBar">
+		<ul class="toolBar">
+			{% if cur_manager == "admin" then %}
+			<li><a class="add" href="/role/add" target="dialog" rel="dlg_addrole" height="420" width="480" title="添加角色"><span>添加</span></a></li>
+			<li><a class="delete" href="/role/del?id={id}" target="ajaxTodo" title="确定要删除吗?"><span>删除</span></a></li>
+			<li><a class="edit" href="/role/add?id={id}" target="dialog" height="420" width="480" title="修改角色"><span>修改</span></a></li>
+			<li class="line">line</li>
+			<li><a class="add" href="/perm_apply" target="ajaxTodo" ><span>应用</span></a></li>
+			<span>注意：修改权限(角色)后，要用户会话过期后才生效，需要立即生效设置请点击左侧【应用】按钮</span>
+			{% end %}
+		</ul>
+	</div>
+	<table class="table" width="100%" layoutH="75">
+		<thead>
+			<tr>
+				<th width="80">角色ID</th>
+				<th width="120">角色名</th>
+				<th width="150">说明</th>
+				<th width="80">应用</th>
+				<th width="280">权限</th>
+				<th width="100">修改日期</th>
+			</tr>
+		</thead>
+		<tbody>
+		{% if roles then %}
+		  {% for i, record in ipairs(roles) do %}
+			<tr target="id" rel="{{record.id}}">
+				<td>{{record.id}}</td>
+				<td>{{record.name}}</td>
+				<td>{{record.remark}}</td>
+				<td>{{record.app}}</td>
+				<td title="{{util.permission_alt(record.permission)}}">{{util.str_clip(record.permission, 40)}}</td>
+				<td>{{util.localtime(record.update_time)}}</td>
+			</tr>
+		  {% end %}
+		{% end %}
+		</tbody>
+	</table>
+	<div class="panelBar">
+		<div class="pages">
+			<span>显示{{numPerPage}}条，共{{totals}}条</span>
+		</div>
+		
+		<div class="pagination" targetType="navTab" totalCount="{{totals}}" numPerPage="{{numPerPage}}" pageNumShown="10" currentPage="{{pageNum}}">&nbsp;</div>
+
+	</div>
+</div>

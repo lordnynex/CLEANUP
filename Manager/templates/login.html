@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>风险管理平台</title>
+
+<link href="/static/dwz/themes/css/login.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+	<div id="login">
+		<div id="login_header">
+			<h1 class="login_logo">
+				<a href="https://github.com/jie123108/ngx-pms"><img src="/static/dwz/themes/default/images/login_logo.gif" /></a>
+			</h1>
+			<div class="login_headerContent">
+				<div class="navList">
+					<ul>
+						<li><a href="mailto:jie123108@163.com">反馈</a></li>
+					</ul>
+				</div>
+				<h2 class="login_title"><img src="/static/dwz/themes/default/images/login_title.png" /></h2>
+			</div>
+		</div>
+		<div id="login_content">
+			<div class="loginForm">
+				<form action="/passport/login_post" method="post">
+					<p>
+						<label>用户名：</label>
+						<input type="text" name="username" size="20" class="required alphanumeric" value="{{username}}" maxlength="64"/>
+					</p>
+					<p>
+						<label>密码：</label>
+						<input type="password" name="password" size="20" class="required"  minlength="4" maxlength="24" value="{{password}}"/>
+					</p>					
+					<div class="login_bar">
+						<input class="sub" type="submit" value=" " />
+					</div>
+				</form>
+			</div>
+			<div class="login_banner"><img src="/static/dwz/themes/default/images/login_banner.jpg" /></div>
+			<div class="login_main">
+				<ul class="helpList">
+					<li><a href="#">忘记密码怎么办？</a></li>
+					<li><a href="#">为什么登录失败？</a></li>
+				</ul>
+				<div class="login_inner">
+					<p>统一的权限管理系统，大大简化公司内部系统管理</p>
+					<p>你只需要一个帐号就可以管理所有的系统。</p>
+				</div>
+			</div>
+		</div>
+		<div id="login_footer">
+			Copyright &copy; 2015 jie123108@163.com Inc. All Rights Reserved.
+		</div>
+	</div>
+</body>
+<script language="javascript">
+	{% if errmsg then %}	
+		alert("{{errmsg}}");
+	{% end %}
+</script>
+</html>

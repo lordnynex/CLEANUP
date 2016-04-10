@@ -1,0 +1,59 @@
+
+<div class="pageContent">	
+	<div class="pageFormContent" layoutH="60">
+		
+		<p class="row_add">
+			<label class="row_add">用户名：</label>				
+			<input name="username" class="required alphanumeric" type="text" size="30" value="{{userinfo.username}}" disabled="true" />
+		</p>			
+		<p class="row_add">
+			<label class="row_add">EMAIL：</label>
+			<input name="email" class="required email" type="text" value="{{userinfo.email}}" size="30" disabled="true" />
+		</p>
+		<p class="row_add">
+			<label class="row_add">TEL:</label>
+			<input name="tel" class="phone" type="text" value="{{userinfo.tel}}" size="30" disabled="true" />
+		</p>		
+		<p class="row_add">
+			<label class="row_add">所属应用:</label>
+			<input name="app" class="required" type="text" value="{{userinfo.app}}" size="30" disabled="true" />
+		</p>
+		<p class="row_add">
+			<label class="row_add">管理权限:</label>
+			<input name="app" class="required" type="text" value="{{userinfo.manager}}" size="30" disabled="true" />
+		</p>
+		<p class="row_add">
+			<label class="row_add">角色:</label>
+			<input name="app" class="required" type="text" value="{{userinfo.role_id}}" size="30" disabled="true" />
+		</p>
+		<p class="row_add">
+			<label class="row_add">权限<br/>(用户/角色):</label>	
+			
+			<select name="permissions" multiple="multiple" size="8" style="width:130px;height: 100px;">
+				{% if userinfo.user_permissions then %}
+					{% for i, item in ipairs(userinfo.user_permissions) do %}
+						<option value="{{item}}">{{perm_map[item] or item}}</option>
+					{% end %}
+				{% end %}
+			</select>
+			&nbsp;&nbsp;
+			<select name="permissions" multiple="multiple" size="8" style="width:130px;height: 100px;">
+				{% if userinfo.role_permissions then %}
+					{% for i, item in ipairs(userinfo.role_permissions) do %}
+						<option value="{{item}}">{{perm_map[item] or item}}</option>
+					{% end %}
+				{% end %}
+			</select>		
+
+		</p>
+	</div>
+	<div class="formBar">
+		<ul>			
+			<li>
+				<div class="button"><div class="buttonContent"><button type="button" class="close">关闭</button></div></div>
+			</li>
+			<li>&nbsp;&nbsp;&nbsp;&nbsp;</li>
+		</ul>
+	</div>
+	
+</div>
