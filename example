@@ -1,0 +1,213 @@
+#!/usr/bin/env perl
+#===============================================================================
+#
+#         FILE: Report.pm
+#
+#  DESCRIPTION: Generate simple ASCII reports.
+#
+#         BUGS: A couple
+#        NOTES: I need to add comments
+#       AUTHOR: Brandon B
+#      VERSION: 1.0
+#      CREATED: 05/21/2014 07:04:27 PM
+#===============================================================================
+
+use strict;
+use warnings;
+
+use Carp;
+use POSIX;
+use Socket;
+use Getopt::Long;
+
+use lib './lib';
+use Report;
+
+my $ip;
+my $cidr;
+my $help;
+
+main();
+
+sub main {
+	parseOpts();
+
+	my $r = Report->new(
+		headerSeparator => 1
+	);
+
+	$r->addHeaders(
+		[
+			"",
+			"DotQuad",
+			"Binary",
+			"Hex",
+			"Decimal"
+
+		]
+	);
+
+
+	$r->addRow(
+		[
+			"IP",
+			$ip,
+			_ip2bin($ip),
+			_ip2hex($ip),
+			_ip2dec($ip)
+		]
+	);
+
+	# Netmask
+	my $netmask = _calc_netmask($ip, $cidr);
+	$r->addRow(
+		[
+			"Netmask",
+			$netmask,
+			_ip2bin($netmask),
+			_ip2hex($netmask),
+			_ip2dec($netmask)
+		]
+	);
+
+	# Subnet Host
+	my $subnetAddr = _findSubnetAddr($ip, $netmask);
+	$r->addRow(
+		[
+			"Subnet Host",
+			$subnetAddr,
+			_ip2bin($subnetAddr),
+			_ip2hex($subnetAddr),
+			_ip2dec($subnetAddr)
+		]
+	);
+
+	# Broadcast
+	my $broadcast = _findBroadcast($subnetAddr, $cidr);
+	$r->addRow(
+		[
+			"Broadcast",
+			$broadcast,
+			_ip2bin($broadcast),
+			_ip2hex($broadcast),
+			_ip2dec($broadcast)
+		]
+	);
+
+	print $r->Render();
+}
+
+sub parseOpts {
+	my $var = GetOptions(
+		'h|help'   => \$help,
+		'i|ip=s'   => \$ip,
+		'c|cidr=s' => \$cidr
+	);
+
+	_Usage() if($help);
+
+	_Usage("No IP or CIDR Specified") unless(
+		defined($ip) && defined($cidr)
+	);
+}
+
+sub _Usage {
+	my $dieMsg = shift;
+	if($dieMsg) {
+		print "Error: $dieMsg\n\n";
+	}
+
+	print "Usage ./".$0." -i 192.168.2.53 -c 24\n\n";
+	print "\t[ -h|help ] Help\n";
+	print "\t[ -i|ip   ] IP\n";
+	print "\t[ -c|cidr ] CIDR\n";
+	print "\n";
+	exit;
+}
+
+sub _calc_netmask {
+        my ($network, $netbit) = @_;
+
+        my $_bit = ( 2 ** (32 - $netbit) ) - 1;
+
+        my $full_mask = unpack("N", pack("C4", split(/\./, '255.255.255.255')));
+        my $netmask   = join ('.', unpack("C4", pack("N", ( $full_mask ^ $_bit ))));
+
+        return $netmask;
+}
+
+sub _ip2bin {
+        my $ip = shift;
+
+        return sprintf("%s %s %s %s", unpack("B8B8B8B8", inet_aton($ip)));
+}
+
+sub _bin2ip {
+        my $bin = shift;
+        my @parts = split(/\s/, $bin);
+
+        if($#parts ne 3) {
+                croak "_bin2ip recieved something strange\n";
+        }
+
+        for(my $i = 0; $i <= $#parts; $i++) {
+                $parts[$i] = oct("0b".$parts[$i]);
+        }
+
+        return join(".", @parts);
+}
+
+sub _ip2hex {
+        my $ip = shift;
+        return sprintf("%02x"x4, unpack("C4", inet_aton($ip)));
+}
+
+sub _hex2ip {
+        my $hex = shift;
+        return inet_ntoa( pack("N", hex($hex)));
+}
+
+sub _ip2dec {
+        unpack N => pack CCCC => split /\./ => shift;
+}
+
+sub _dec2ip {
+        join '.', unpack 'C4', pack 'N', shift;
+}
+
+sub _findSubnetAddr {
+        my ($ip, $subnet) = @_;
+
+        return(
+                _bin2ip(
+                        (
+                                _ip2bin($ip)
+                                &
+                                _ip2bin($subnet)
+                        )
+                )
+        );
+}
+
+sub _findBroadcast {
+        my ($subnetAddr, $netbit) = @_;
+
+        my $bin = _ip2bin($subnetAddr); $bin =~ s/\s//g;
+
+        my $bits = length($bin) - $netbit;
+        substr($bin, -$bits, $bits, '1' x $bits);
+
+        $bin =~ s/(.{8})/$1 /g;
+        return _bin2ip($bin);
+}
+
+sub _pad {
+        my($string, $width) = @_;
+
+        my $pad = floor(($width - length($string)) / 2);
+
+        my $str = " " x $pad;
+        $str .= $string;
+        $str .= " " x $pad;
+        return $str;
+}
