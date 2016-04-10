@@ -1,0 +1,25 @@
+-- {"remote_ip":"10.0.0.231, 10.0.0.231","request_path":"/members.json","request_method":"GET","request_referrer":"http://staging.justworks.com/dashboard","request_user_agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.155 Safari/537.36","controller":"members","action":"index","timestamp":"2015-08-23 13:32:06.492","member_id":null,"company_id":null,"@version":"1","@timestamp":"2015-08-23T17:36:18.075Z","host":"dhost-staging-app-101","path":"request/request_20150823.log","type":"event_logger"}
+
+
+CREATE TABLE
+    eventlogs.request (
+    host                varchar(MAX),
+    timestamp           timestamp,
+    company_id          integer,
+    member_id           integer,
+    controller          varchar(MAX),
+    action              varchar(MAX),
+    remote_ip           varchar(MAX),
+    request_path        varchar(MAX),
+    request_method      varchar(MAX)
+);
+
+ALTER TABLE
+    eventlogs.request
+ADD COLUMN
+    request_referrer    varchar(MAX);
+
+ALTER TABLE
+    eventlogs.request
+ADD COLUMN
+    request_user_agent  varchar(MAX);

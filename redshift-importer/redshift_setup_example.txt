@@ -1,0 +1,17 @@
+{
+     "timestamp" => "2015-10-11 17:37:14.370",
+    "controller" => "login",
+        "action" => "login_submit",
+      "username" => "fake_username",
+       "success" => false,
+      "@version" => "1",
+    "@timestamp" => "2015-10-11T17:37:14.576Z",
+          "host" => "dhost-nick-101",
+          "path" => "/var/log/event_logger/login_attempt/login_attempt_20151011.log",
+          "type" => "event_logger"
+}
+
+
+
+#Setup Schema For All Event Logs (one time only)
+
