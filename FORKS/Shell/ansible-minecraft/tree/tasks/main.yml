@@ -1,0 +1,106 @@
+---
+- name: Install build dependencies
+  apt: name={{ item }} state=present install_recommends=no
+  with_items:
+  - openjdk-7-jdk
+  - maven
+  - git
+  - tmux
+
+- name: Install iptables rules
+  copy: src=spigot.rules dest=/etc/iptables.d/spigot.rules owner=root group=root mode=0640
+  notify: iptables
+
+- name: Create the minecraft user
+  user: name=minecraft state=present system=yes
+
+- name: Create the minecraft base directory
+  file: path=/srv/minecraft/{{ serverSubDir }}/ state=directory owner=minecraft group=minecraft mode=0755
+
+- name: Create the backend base directory
+  file: path=/srv/minecraft/{{ serverSubDir }}/backend state=directory owner=minecraft group=minecraft mode=0755
+
+- name: Create the BungeeCord root
+  file: path=/srv/minecraft/{{ serverSubDir }}/bungeeCord/ state=directory owner=minecraft group=minecraft mode=0755
+
+- name: Create the build root
+  file: path=/srv/minecraft/{{ serverSubDir}}/build/ state=directory owner=minecraft group=minecraft mode=0755
+
+- name: Create the spigot build root
+  file: path=/srv/minecraft/{{ serverSubDir }}/build/spigot state=directory owner=minecraft group=minecraft mode=0755
+
+- name: Create the BungeeRelay build root
+  file: path=/srv/minecraft/{{ serverSubDir }}/build/BungeeRelay state=directory owner=minecraft group=minecraft mode=0755
+
+- name: Create the local bin directory
+  file: path=/srv/minecraft/{{ serverSubDir }}/bin/ state=directory owner=minecraft group=minecraft mode=0755
+
+- name: Create the minecraft server folders
+  file: path=/srv/minecraft/{{ serverSubDir }}/backend/{{ item.value.instanceDir  }} state=directory owner=minecraft group=minecraft mode=0755
+  with_dict: servers
+
+- name: Retrieve spigot BuildTools.jar
+  get_url: url={{ BuildTools_url }} dest=/srv/minecraft/{{ serverSubDir }}/build/spigot/BuildTools.jar owner=minecraft group=minecraft mode=0644
+
+- name: Attempt to build the Spigot artifacts
+  command: java -jar BuildTools.jar --rev {{ spigot_version }} chdir=/srv/minecraft/{{ serverSubDir }}/build/spigot creates=/srv/minecraft/{{ serverSubDir }}/build/spigot/spigot-{{ spigot_version }}.jar
+
+- name: Symlink the spigot binary to bin
+  file: src=/srv/minecraft/{{ serverSubDir}}/build/spigot/spigot-{{ spigot_version }}.jar dest=/srv/minecraft/{{ serverSubDir }}/bin/spigot.jar state=link owner=minecraft group=minecraft
+
+- name: Link spigot binaries
+  file: src=/srv/minecraft/{{ serverSubDir }}/bin/spigot.jar dest=/srv/minecraft/{{ serverSubDir }}/backend/{{ item.value.instanceDir  }}/spigot.jar state=link owner=minecraft group=minecraft
+  with_dict: servers
+
+- name: Obtain BungeeCord binary
+  get_url: url={{ BungeeCord_url }} dest=/srv/minecraft/{{ serverSubDir }}/bin/BungeeCord.jar owner=minecraft group=minecraft mode=0644
+
+- name: Link BungeeCord binary
+  file: src=/srv/minecraft/{{ serverSubDir }}/bin/BungeeCord.jar dest=/srv/minecraft/{{ serverSubDir }}/bungeeCord/bungeeCord.jar state=link owner=minecraft group=minecraft
+
+- name: Retrieve BungeeRelay Source
+  git: clone=yes depth=1 force=yes dest=/srv/minecraft/{{ serverSubDir }}/build/BungeeRelay repo=https://github.com/collegiumv/BungeeRelay
+
+- name: Attempt to build BungeeRelay
+  command: mvn package chdir=/srv/minecraft/{{ serverSubDir }}/build/BungeeRelay creates=/srv/minecraft/{{ serverSubDir }}/build/BungeeRelay/target/BungeeRelay.jar
+
+- name: Link BungeeRelay to bin
+  file: src=/srv/minecraft/{{ serverSubDir }}/build/BungeeRelay/target/BungeeRelay.jar dest=/srv/minecraft/{{ serverSubDir }}/bin/BungeeRelay.jar state=link
+
+- name: Configure Bungee
+  template: src=bungeeConfig.yml dest=/srv/minecraft/{{ serverSubDir }}/bungeeCord/config.yml owner=minecraft group=minecraft mode=0644
+
+- name: Create BungeeCord plugins folder
+  file: path=/srv/minecraft/{{ serverSubDir }}/bungeeCord/plugins state=directory owner=minecraft group=minecraft mode=0755
+
+- name: Create BungeeRelay data folder
+  file: path=/srv/minecraft/{{ serverSubDir }}/bungeeCord/plugins/BungeeRelay state=directory owner=minecraft group=minecraft mode=0755
+
+- name: Link BungeeRelay to BungeeCord plugins
+  file: src=/srv/minecraft/{{ serverSubDir }}/bin/BungeeRelay.jar dest=/srv/minecraft/{{ serverSubDir }}/bungeeCord/plugins/BungeeRelay.jar state=link
+
+- name: Load BungeeRelay config data
+  include_vars: irc.yml
+
+- name: Configure BungeeRelay
+  template: src=bungeerelay.yml dest=/srv/minecraft/{{ serverSubDir }}/bungeeCord/plugins/BungeeRelay/config.yml owner=root group=minecraft mode=0640
+
+- name: Configure servers
+  template: src=server.properties.j2 dest=/srv/minecraft/{{ serverSubDir }}/backend/{{ item.value.instanceDir }}/server.properties owner=minecraft group=minecraft mode=0644
+  with_dict: servers
+
+- name: Agree to EULA
+  copy: src=eula.txt dest=/srv/minecraft/{{ serverSubDir }}/backend/{{ item.value.instanceDir }}/eula.txt owner=minecraft group=minecraft mode=0644
+  with_dict: servers
+
+- name: Create start scripts
+  template: src=start.sh.j2 dest=/srv/minecraft/{{ serverSubDir }}/backend/{{ item.value.instanceDir }}/start.sh owner=minecraft group=minecraft mode=0755
+  with_dict: servers
+
+- name: BungeeCord start script
+  copy: src=bungeeStart.sh dest=/srv/minecraft/{{ serverSubDir }}/bungeeCord/start.sh owner=minecraft group=minecraft mode=0755
+
+- name: Main start script
+  template: src=allStart.sh dest=/srv/minecraft/{{ serverSubDir }}/start.sh owner=minecraft group=minecraft mode=0755
+
+- include: plugins.yml

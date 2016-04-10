@@ -1,0 +1,131 @@
+# Welcome to the BungeeRelay configuration file.
+# These small comments serve as an explanation of what each value is and general guidance.
+
+# Please remember the following before you begin:
+# - This plugin is not a standalone IRCd, and will not function without an InspIRCd
+#   instance to link to. You can find InspIRCd at http://inspircd.org/
+# - This plugin is currently only compatible with recent versions of InspIRCd. This is
+#   the only type of IRCd you should use with this plugin, NOT UnrealIRCd etc.
+# - Make sure you enable m_spanningtree.so in modules.conf.
+
+# If you need any help, post on the discussion thread or poke me (Dead-i) on IRC.
+
+# This section mainly uses info from your link block, in links.conf.
+server:
+  # The address the plugin needs to connect to.
+  # Put in 127.0.0.1 if the IRC is on the same box.
+  host: "{{ irc_host }}"
+
+  # The port the plugin needs to connect to.
+  # The "port" in your link block.
+  port: {{ irc_port }}
+
+  # The "name" in your link block.
+  servername: "{{ irc_servername }}"
+
+  # The friendly name for this server. It can be whatever you please.
+  realname: "BungeeCord relay from minecraft"
+
+  # The password the plugin expects to receive.
+  # The "sendpass" in your link block.
+  recvpass: {{ inspircd_links_minecraft_recvpass | hash('sha1') }}
+  # The password the plugin will send to the server.
+  # The "recvpass" in your link block.
+  sendpass: {{ inspircd_links_minecraft_sendpass | hash('sha1') }}
+
+  # The length of time to wait before automatically reconnecting, should connection to the
+  # IRC server be lost. The time is in milliseconds. Set to -1 for no reconnect attempt.
+  reconnect: 3000
+
+  # Name of the channel (e.g. "#minecraft").
+  channel: "#main"
+
+  # This value determines whether the player should be moved/kicked from the server if they
+  # are kicked through IRC.
+  kick: true
+
+  # You can set a prefix and suffix to the nicknames of Minecraft IRC users to add in
+  # the case of a collision.
+  userprefix: ""
+  usersuffix: "|mc"
+
+  # Set to "true" to make BungeeRelay say each message it receives raw in console.
+  # Used for debugging purposes only. For general use, leave "false".
+  debug: false
+
+# This section contains the format of each message going to your Minecraft servers.
+# Accepts colour codes, and each parameter is capital and surrounded in curly brackets.
+# Leaving a particular message empty is acceptable.
+formats:
+  # The ident of a user connecting to IRC.
+  # Parameters: {IDENT}
+  ident: "minecraft"
+
+  # How public messages sent from IRC will appear in Minecraft.
+  # Parameters: sender, message
+  msg: "<&7[IRC]&r {SENDER}> {MESSAGE}"
+
+  # How public messages sent with /me will appear in Minecraft.
+  # Parameters: sender, message
+  me: "&d* [IRC] {SENDER} {MESSAGE}"
+
+  # How private messages sent to a user will appear in Minecraft.
+  # Parameters: sender, message
+  privatemsg: "&7[PM]&r <&7[IRC]&r {SENDER}> {MESSAGE}"
+
+  # How private messages appear if it was sent with /me in Minecraft.
+  privateme: "&7[PM] &d* [IRC] {SENDER} {MESSAGE}"
+
+  # The output of the global /say command in Minecraft
+  # Parameters: message
+  saycommand: "&d[SERVER] {MESSAGE}"
+
+  # How mode changes will appear in Minecraft
+  # Parameters: sender, mode
+  mode: "&7{SENDER} set mode {MODE}"
+
+  # How nick changes will appear in Minecraft
+  # Parameters: old_nick, new_nick
+  nick: "&7{OLD_NICK} is now know as &7{NEW_NICK}"
+
+  # How joins will appear in Minecraft
+  # Parameters: sender
+  join: "&7{SENDER} joined the channel"
+
+  # How parts (leaving the channel) will appear in Minecraft
+  # Parameters: sender, reason
+  part: "&7{SENDER} left the channel ({REASON})"
+
+  # How Minecraft quits will appear in IRC
+  # Parameters: sender
+  mcquit: "{SENDER} logged out of Minecraft"
+
+  # How IRC quits will appear in Minecraft
+  # Parameters: sender, reason
+  ircquit: "&7{SENDER} left IRC ({REASON})"
+
+  # How kicks will appear in Minecraft
+  # Parameters: sender, target, reason
+  kick: "&7{SENDER} kicked {TARGET} from the channel ({REASON})"
+
+  # How kills will appear in Minecraft
+  # Parameters: sender, target, reason
+  kill: "&7{SENDER} killed {TARGET} from the channel ({REASON})"
+
+  # The message players will be disconnected with if they are kicked through IRC.
+  # Parameters: sender, target, reason
+  disconnectkick: "&7You were kicked by {SENDER} through IRC.&r\n\n{REASON}"
+
+  # The message players will be disconnected with if they are killed through IRC.
+  # Parameters: sender, target, reason
+  disconnectkill: "&7You were killed by {SENDER} through IRC.&r\n\n{REASON}"
+
+  # The message players will be disconnected with if they are banned through IRC.
+  # Parameters:
+  disconnectban: "&7You have been banned through IRC."
+
+  # Default kick message if the user does not define one when using /kick in-game.
+  Parameters: sender
+  defaultkick: "Kicked by a moderator from within Minecraft"
+
+# End of configuration.

@@ -1,0 +1,14 @@
+---
+- name: Get Essentials.jar
+  get_url: url={{ Essentials_url }} dest=/srv/minecraft/{{ serverSubDir }}/bin/essentials.jar owner=minecraft group=minecraft mode=0644
+
+- name: Install Essentials.jar
+  file: src=/srv/minecraft/{{ serverSubDir }}/bin/essentials.jar dest=/srv/minecraft/{{ serverSubDir }}/backend/{{ item.value.instanceDir }}/plugins/essentials.jar state=link
+  with_dict: servers
+
+- name: Get EssentialsSpawn.jar
+  get_url: url={{ EssentialsSpawn_url }} dest=/srv/minecraft/{{ serverSubDir }}/bin/essentialsspawn.jar owner=minecraft group=minecraft mode=0644
+
+- name: Install Essentials.jar
+  file: src=/srv/minecraft/{{ serverSubDir }}/bin/essentialsspawn.jar dest=/srv/minecraft/{{ serverSubDir }}/backend/{{ item.value.instanceDir }}/plugins/essentialsspawn.jar state=link
+  with_dict: servers

@@ -1,0 +1,7 @@
+---
+- name: Get the worldedit jar
+  get_url: url={{ WorldEdit_url }} dest=/srv/minecraft/{{ serverSubDir }}/bin/worldedit.jar owner=minecraft group=minecraft mode=0644
+
+- name: Install WorldEdit
+  file: src=/srv/minecraft/{{ serverSubDir }}/bin/worldedit.jar dest=/srv/minecraft/{{ serverSubDir }}/backend/{{ item.value.instanceDir }}/plugins/worldedit.jar state=link
+  with_dict: servers
