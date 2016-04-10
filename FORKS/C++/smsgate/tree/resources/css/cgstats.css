@@ -1,0 +1,18 @@
+.rowOk {
+background-color: #bcf3ac;
+}
+
+.rowWarn {
+background-color: #f3edac;
+}
+
+.rowErr {
+background-color: #f1afa0;
+}
+
+table.cgstatst TD {
+border:		1px solid grey;
+padding:	1px 10px;
+font-family:	Verdana,Arial,Sans-serif;
+font-size:	14px;
+}

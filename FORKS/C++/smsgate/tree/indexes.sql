@@ -1,0 +1,18 @@
+CREATE INDEX message_status_REQUESTID_2012_06 on message_status_2012_06( "REQUESTID" );
+CREATE INDEX message_status_WHEN_2012_06 on message_status_2012_06( "WHEN" );
+CREATE INDEX message_status_TO_2012_06 on message_status_2012_06( "TO" );
+CREATE INDEX message_status_COUNTRY_2012_06 on message_status_2012_06( "COUNTRY" );
+CREATE INDEX message_status_COUNTRYCODE_2012_06 on message_status_2012_06( "COUNTRYCODE" );
+CREATE INDEX message_status_OPERATOR_2012_06 on message_status_2012_06( "OPERATOR" );
+CREATE INDEX message_status_OPERATORCODE_2012_06 on message_status_2012_06( "OPERATORCODE" );
+CREATE INDEX message_status_REGION_2012_06 on message_status_2012_06( "REGION" );
+CREATE INDEX message_history_REQUESTID_2012_06  on message_history_2012_06 ( "REQUESTID" );
+CREATE INDEX message_history_WHEN_2012_06  on message_history_2012_06 ( "WHEN" );
+CREATE INDEX message_history_GATEWAY_2012_06  on message_history_2012_06 ( "GATEWAY" );
+CREATE INDEX message_history_WHEN_GATEWAY_2012_06  on message_history_2012_06 ( "WHEN", "GATEWAY" );
+CREATE INDEX smsrequest_REQUESTID_2012_06   on smsrequest_2012_06 ( "REQUESTID" );
+CREATE INDEX smsrequest_WHEN_2012_06   on smsrequest_2012_06 ( "WHEN" );
+CREATE INDEX smsrequest_TXT_2012_06   on smsrequest_2012_06 ( "TXT" );
+CREATE INDEX smsrequest_FROM_2012_06   on smsrequest_2012_06 ( "FROM" );
+CREATE INDEX smsrequest_TO_2012_06   on smsrequest_2012_06 ( "TO" );
+CREATE INDEX smsrequest_PID_2012_06   on smsrequest_2012_06 ( "PID" );

@@ -1,0 +1,56 @@
+#!/bin/bash
+
+function is_running {
+PID=`cat $1`;
+IS_RUNNING=`ps $PID | wc -l`;
+if [ $IS_RUNNING -eq 2 ]; then
+STARTED_OK=1;
+else
+STARTED_OK=0;
+fi
+
+return $STARTED_OK;
+}
+
+
+function run_smsgate {
+
+echo "Starting SMSGate Up"
+/home/biin/smsgate/smsgate -t 16 --http-address 127.0.0.1 --http-port 8080 --docroot . --deploy-path / 1>>/var/log/smsgate/access.log 2>>/var/log/smsgate/base.log&
+PID=$!;
+sleep 5;
+IS_RUNNING=`ps $PID | wc -l`;
+if [ $IS_RUNNING -eq 2 ]; then
+STARTED_OK=1;
+echo $! > $1
+return $PID;
+else
+STARTED_OK=0;
+return 0;
+fi
+
+return 0;
+}
+
+while [ 1 ]; do
+
+#for i in {1..18000}
+#do
+
+echo -n `date "+%D %T"` Checking SMSGate status... ;
+is_running /home/biin/smsgate/server.pid;
+if [ $? == 0 ]; then
+echo "not running, trying to launch";
+run_smsgate /home/biin/smsgate/server.pid;
+else
+echo "is running"
+fi
+
+sleep 1;
+#done
+#echo `date "+%D %T"` Time to restart;
+#kill `cat server.pid`;
+#sleep 1;
+
+done
+

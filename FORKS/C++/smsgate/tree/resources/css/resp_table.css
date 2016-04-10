@@ -1,0 +1,25 @@
+.rowOk {
+background-color: #bcf3ac;
+}
+
+.rowWarn {
+background-color: #f3edac;
+}
+
+.rowErr {
+background-color: #f1afa0;
+}
+
+td {
+padding: 0px 10px;
+}
+
+table.gateway_data_table {
+	background-color: #bcf3ac;	
+	padding: 2px 10px;
+}
+
+table.gateway_report_table {
+	background-color: #f1afa0;	
+	padding: 2px 10px;
+}
