@@ -1,0 +1,43 @@
+INSTALL for LuaCV
+=================
+
+  Prerequisities
+  -------------
+    - C++ compiler
+    - OpenCV >= 2.2.0
+    - Lua    >= 5.1.4
+    - Cmake  >  2.8.0
+
+  Building LuaCV
+  --------------
+  LuaCV is built in the src directory, but the built process can be
+  controlled from the top-level directory.
+  
+    Unix/Linux
+    Building LuaCV on Unix-like systems should be very easy.
+    First of all OpenCV, Lua and Cmake have to be installed in your system.
+    If you have all of them, go to LuaCV root directory and run "cmake src".
+    Cmake will generate all necessary files including Makefile. Once you have 
+    Makefile, you can do "make". LuaCV library will be compiled to root directory 
+    of project.
+
+    Windows
+    Building LuaCV on Windows is pretty dependent on your development kit.
+    But Cmake can handle most of them. Just be sure to generate you project 
+    with right generator. See "cmake --help" for them. After that you have to
+    run "cmake -G YOUR_GENERATOR src" from project root folder. 
+    Once you have generated project/makefile, you can build LuaCV in way used in 
+    your ide.
+
+  No backward compatity with OpenCV <=2.1.*
+  ------------------------------------------
+  Due to massive changes in OpenCV since 2.2.0 is not supported backward compatibility.
+  Main reason is new module system which changed location of all functions in headers.
+
+  Possible problems
+  ----------------
+  You can encounter an "Illegal instruction" problem in some cases. Just be sure 
+  that your cpu supports SSE extensions. Or build OpenCV without them.
+
+  If you see some segmentation fault, please send me a email at 
+  jiri<dot>prymus<at>gmail<dot>com. I'm working on bug free code, but it's a huge goal.

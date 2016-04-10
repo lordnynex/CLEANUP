@@ -1,0 +1,39 @@
+CHANGELOG for LuaCV
+===================
+
+  Changes in 0.2.0
+  ----------------
+    - Almost all OpenCV C API implemented.
+    - Many new samples to test new functions.
+    - Allocation bugs fixed.
+    - OpenCV 2.3 compatibility.
+    - Lua 5.2 compatibility.
+    - NSIS MS Windows installer.
+    - Partial documentation.
+
+  Changes in 0.1.4
+  ----------------
+    - New allocation system for all objects (using boxed pointer). Big objects 
+      like matrix and images aren't copied now. You can releas every object by
+      obj=nil
+      collectgarbage('collect')
+      Releasing of objects is done by __gc callback with (cvFree/cvRelease* func).
+    - Minor changes in LuaCV API to maximize optimalization by compiler (template
+      functions, using aligned OpenCV alloc/free).
+    - Some new types for image processing module (CvSubdiv2D*).
+    - Implemented functions for CvGraph handling in core module.
+    - Implemented various containters for imgproc modul.
+    - Whole highgui C API is implemented (or almost all functions from C api).
+    - Most of functions from imgproc C API module are implemented, but need proper 
+      testing.
+    - New samples in sample directory to test new implemented functions from imgproc
+      module (almost all c api samples).
+    - OpenCV callback functions for tracbars and mouse events are now fully implemented
+      See functions CreateTrackbar and SetMouseCallback from highgui module or samples
+      for basic usage.
+    
+  Changes in 0.1.3
+  ----------------
+    - Whole wrapper was rewritten to new OpenCV 2.2. It has to be done because of 
+      new modular system in OpenCV. And that's why new LuaCV won't be 
+      back compatibile with OpenCV < 2.2 .
