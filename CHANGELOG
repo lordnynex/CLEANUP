@@ -1,0 +1,15 @@
+master
+======
+
+* Added dev/test environment setup.
+
+1.1.0
+======
+
+* Fixed font color for body filter
+* Security and usability enhancements from @eschwim
+
+1.0.0
+=====
+
+* First offical release
