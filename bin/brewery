@@ -1,0 +1,267 @@
+#! /usr/bin/env python
+#
+
+"""Brewery tool
+
+    For more information run: brewery --help
+    
+    Author: Stefan Urbanek <stefan.urbanek@gmail.com>
+    Date: 2010-12
+"""
+
+import argparse
+import json
+import sys
+import ConfigParser
+import os.path
+import urlparse
+import argparse
+import urllib2
+import re
+import textwrap
+import brewery.streams
+from operator import itemgetter
+
+class ToolError(Exception):
+    """Just exception"""
+    pass
+
+CONFIG_PATHS = ['/etc/brewery.conf', \
+				'~/.brewery.conf', \
+				'./brewery.conf']
+
+def load_config(args):
+    paths = CONFIG_PATHS + (args.config if args.config else [])
+    config = ConfigParser.SafeConfigParser()
+
+    for path in paths:
+        if os.path.exists(path):
+            config.read(path)
+            
+    if config.has_section("extensions"):
+        extensions = config.options("extensions")
+        for extension in extensions:
+            mod_name = config.get("extensions", extension)
+            import_extension(extension, mod_name)
+                
+def import_extension(extension_name, module_name = None):
+    """Imports a brewery tool extension from module `module_name`.
+    
+    Note: extension name is not used yet module_name is specified. Might be used in the future to allow
+    different modules replace extensions with same name.
+    """
+    
+    module = __import__(module_name or extension_name)
+
+def run_stream(args):
+    stream = load_stream(args.stream)
+
+    # FIXME: add configuration here
+    
+    try:
+        stream.run()
+    except brewery.streams.StreamRuntimeError as e:
+        e.print_exception()
+
+    # FIXME: add exit(1)
+
+def load_stream(resource):
+    desc = load_json(args.stream)
+    
+    stream = brewery.streams.Stream()
+    stream.update(nodes = desc.get("nodes"), connections = desc.get("connections"))
+
+    return stream
+    
+def load_json(resource):
+    """Load json from an URL or local file."""
+
+    parts = urlparse.urlparse(resource)
+    should_close = True
+    handle = open(resource) if parts.scheme in ('', 'file') \
+                                 else urllib2.urlopen(resource)
+
+    try:
+        desc = json.load(handle)
+    except Exception as e:
+        raise Exception("Unable to load JSON from '%s'. Reason: %s" % (resource, str(e)))
+    finally:
+        handle.close()
+
+    return desc
+
+def create_graph(args):
+    stream = load_stream(args)
+    
+    graph = "digraph {\n"
+    for connection in stream.connections:
+        src = connection[0]
+        target = connection[1]
+        format = {}
+        
+        format_str = ",".join([ "%s=%s" % (k, v) for k, v in format.items()])
+        
+        graph += "%s -> %s;\n" % (type(src).identifier(), 
+                                   type(target).identifier())
+
+    graph += "}\n"
+    
+    print graph
+    
+def list_nodes(args):
+    
+    node_name = args.node
+    catalogue = brewery.nodes.node_catalogue()
+
+    if node_name:
+        if node_name in catalogue:
+            info = catalogue[node_name]
+            
+            print "%s - %s\n" % (node_name, info.get("label") or node_name)
+            
+            if "description" in info:
+                print info["description"] + "\n"
+            
+            print "attributes:"
+            for attr in info.get("attributes") or []:
+                print "    %s - %s" % (attr["name"], attr.get("description") or "(no description)")
+            
+        else:
+            print "unknown node: %s" % node_name
+    else:
+    
+        all_nodes = sorted(catalogue.values(), key=itemgetter("name"))
+    
+        types = ["source", "processing", "target"]
+        for t in types:
+            nodes = [node for node in all_nodes if node["type"] == t]
+            print_nodes(nodes, t)
+
+def print_nodes(nodes, label):
+    print "%s nodes:" % label
+    for node in nodes:
+        print "    " + node["name"]
+
+    print ""
+    
+def run_pipe(args):
+
+    # Collect nodes
+    pattern = re.compile(r"^(\w+)=(.*)")
+    templates = []
+    attribs = {}
+    current = None
+
+    # Cllect nodes and attributes
+    # 
+    # node name pattern: node_name
+    # attribute pattern: attribute=value
+    #
+    
+    for arg in args.node:
+        match = pattern.match(arg)
+        if match:
+            (attribute, value) = match.groups()
+            attribs[attribute] = value
+        else:
+            if current:
+                templates.append( (current, attribs) )
+                attribs = {}
+            current = arg
+    if current:
+        templates.append( (current, attribs) )
+
+    stream = brewery.Stream()
+    last_node = None
+    
+    nodes = []
+    for template, attribs in templates:
+        try:
+            node = brewery.nodes.create_node(template)
+        except KeyError:
+            sys.stderr.write("ERROR: unknown node %s\n" % template)
+            exit(1)
+
+        node.configure(attribs)
+        stream.add(node)
+        nodes.append(node)
+        
+        if last_node:
+            stream.connect(last_node, node)
+        last_node = node
+    
+    # If first node is not source node, then we add CSV node with standard
+    # input
+    
+    if not isinstance(nodes[0], brewery.nodes.SourceNode):
+        node = brewery.nodes.create_node("csv_source")
+        node.resource = sys.stdin
+        stream.add(node)
+        stream.connect(node, nodes[0])
+
+    if not isinstance(nodes[-1], brewery.nodes.TargetNode):
+        node = brewery.nodes.create_node("csv_target")
+        node.resource = sys.stdout
+        stream.add(node)
+        stream.connect(nodes[-1], node)
+    
+    stream.run()
+    
+################################################################################
+# Main code
+
+parser = argparse.ArgumentParser(description='Brewery runner')
+# parser.add_argument('command')
+# parser.add_argument('command_args', nargs = '*', default = [])
+parser.add_argument('--config', action='append', help='brewery configuration file')
+subparsers = parser.add_subparsers(title='commands', help='additional help')
+
+################################################################################
+# Command: valdate_model
+
+subparser = subparsers.add_parser('run', help = "run a stream")
+subparser.add_argument('stream', help='path to the stream JSON file')
+subparser.set_defaults(func=run_stream)
+
+################################################################################
+# Command: graph
+
+subparser = subparsers.add_parser('graph', help = "generate a graphviz representation of the stream")
+subparser.add_argument('stream', help='path to the stream JSON file')
+subparser.set_defaults(func=create_graph)
+
+################################################################################
+# Command: pipe
+
+subparser = subparsers.add_parser('pipe', 
+                    help="create a simple Brewery node pipe",
+                    formatter_class=argparse.RawDescriptionHelpFormatter,
+                    description=textwrap.dedent('''\
+                    There should be at least one processing node specified.
+                    
+                    The arguments are either node names or node attributes.
+                    Attributes follow node name and have format: attribute=value
+                    
+                    If there is no source node, then CSV source on standard
+                    input is assumed. If there is no target node, then CSV
+                    target on standard output is assumed.
+                    ''')
+                )
+subparser.add_argument('node', nargs="+", help='list of processing nodes')
+subparser.set_defaults(func=run_pipe)
+
+################################################################################
+# Command: nodes
+
+subparser = subparsers.add_parser('nodes', help="list available nodes")
+subparser.add_argument('node', nargs='?', help='show information about single node')
+subparser.set_defaults(func=list_nodes)
+
+args = parser.parse_args(sys.argv[1:])
+
+load_config(args)
+try:
+    args.func(args)
+except ToolError as e:
+    sys.stderr.write("Error: %s" % str(e))
+    exit(1)

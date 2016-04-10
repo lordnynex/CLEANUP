@@ -1,0 +1,152 @@
+"""MongoDB Auditing tool
+
+    For more information run: mongoaudit --help
+    
+    Author: Stefan Urbanek <stefan.urbanek@gmail.com>
+    Date: 2010-12
+"""
+
+import argparse
+import pymongo
+import json
+import sys
+import brewery
+from brewery import ds
+
+key_stats = {}
+
+def mongo_collection(database, collection, port = None, host = None):
+    """Audit a collection in a database"""
+    connection = pymongo.connection.Connection(port = port, host = host)
+    database = connection[database]
+    collection = database[collection]
+
+    return collection
+
+def collapse_record(record, separator = '.', root = None):
+    """See :func:`brewery.ds.expand_record` for reverse operation.
+    """
+    result = {}
+    try:
+        test = record.items()
+    except:
+        return
+        
+    for key, value in record.items():
+        if root:
+            collapsed_key = root + separator + key
+        else:
+            collapsed_key = key
+
+        if type(value) == dict:
+            collapsed = collapse_record(value, separator, collapsed_key)
+            result.update(collapsed)
+        else:
+            result[collapsed_key] = value
+    return result
+
+
+def audit_collection(collection, threshold = None, collapse = True):
+    count = 0
+    for record in collection.find():
+        count += 1
+        if collapse:
+            record = collapse_record(record)
+        for key, value in record.items():
+            if not key in key_stats:
+                stat = brewery.dq.FieldStatistics(key, distinct_threshold = threshold)
+                key_stats[key] = stat
+            else:
+                stat = key_stats[key]
+            stat.probe(value)
+
+    key_audit = {}
+    for key, stat in key_stats.items():
+        stat.record_count = count
+        stat.finalize()
+        key_audit[key] = stat
+    
+    result = {}
+    result["keys"] = key_audit
+    result["record_count"] = count
+
+    return result
+
+def data_audit(args):
+    pass
+    
+def fields_audit(args):
+    pass
+
+################################################################################
+# Output dump
+
+def dump_text(result):
+    print "record count: %i" % result["record_count"]
+    for key, stat in result["keys"].items():
+        print "%s:" % stat.field
+        if stat.unique_storage_type:
+            print "\tstorage type: %s" % stat.unique_storage_type
+        else:
+            print "\tstorage types:"
+            for stype in stat.storage_types:
+                print "\t\t'%s'" % stype
+
+        print "\tpresent values: %d (%.2f%%)" % (stat.value_count, stat.value_ratio * 100)
+        print "\tnull: %d (%.2f%% of records, %.2f%% of values)" % \
+                                    (stat.null_count, stat.null_record_ratio * 100, stat.null_value_ratio * 100)
+
+        print "\tempty strings: %d" % (stat.empty_string_count)
+
+        if stat.distinct_overflow:
+            print "\tdistinct overflow"
+        elif len(stat.distinct_values) > 0:
+            print "\tdistinct values:"
+            for value in stat.distinct_values:
+                print "\t\t'%s'" % value
+
+def dump_json(result):
+    json_dict = result.copy()
+    del json_dict["keys"]
+    for key, stat in result["keys"].items():
+        json_dict[key] = stat.dict()
+    json.dump(json_dict, sys.stdout)    
+
+################################################################################
+# Main code
+
+parser = argparse.ArgumentParser(description='Audit a MongoDB collection')
+parser.add_argument('-H', '--host', help='host')
+parser.add_argument('-p', '--port', help='port', type =int)
+parser.add_argument('--collapse', help='collapse (flatten) records', action = 'store_true')
+parser.add_argument('-t', '--threshold', help='threshold for number of distinct values (default is 10)', \
+                                         type = int, default = 10)
+parser.add_argument('-f', '--format', help='output format (default is text)', 
+                                      default ='text', choices = ['text', 'json'])
+parser.add_argument('database')
+parser.add_argument('collection')
+
+subparsers = parser.add_subparsers(title='commands', help='additional help')
+
+################################################################################
+# Command: valdate_model
+
+subparser = subparsers.add_parser('data', help = "basic audit")
+subparser.set_defaults(func=data_audit)
+
+subparser = subparsers.add_parser('fields', help = "audit only list of fields")
+parser.add_argument('--count', help='include record count with given field', action = 'store_true')
+subparser.set_defaults(func=field_audit)
+
+
+args = parser.parse_args(sys.argv[1:])
+
+args.func(args)
+
+collection = mongo_collection(args.database, args.collection, host = args.host, port =args.port)
+result = audit_collection(collection, threshold = args.threshold, collapse = args.collapse)
+
+if args.format == 'text':
+    dump_text(result)
+else:
+    dump_json(result)
