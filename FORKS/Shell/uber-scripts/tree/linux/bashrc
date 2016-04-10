@@ -1,0 +1,118 @@
+# .bashrc
+
+# Test for an interactive shell.  There is no need to set anything
+# past this point for scp and rcp, and it's important to refrain from
+# outputting anything in those cases.
+if [[ $- != *i* ]] ; then
+        # Shell is non-interactive.  Be done now!
+        return
+fi
+
+# Bash won't get SIGWINCH if another process is in the foreground.
+# Enable checkwinsize so that bash will check the terminal size when
+# it regains control.  #65623
+# http://cnswww.cns.cwru.edu/~chet/bash/FAQ (E11)
+shopt -s checkwinsize
+
+# Enable history appending instead of overwriting.  #139609
+shopt -s histappend
+
+# Change the window title of X terminals 
+case ${TERM} in
+        xterm*|rxvt*|Eterm|aterm|kterm|gnome*|interix)
+                PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOSTNAME%%.*}:${PWD/#$HOME/~}\007"'
+                ;;
+        screen)
+                PROMPT_COMMAND='echo -ne "\033_${USER}@${HOSTNAME%%.*}:${PWD/#$HOME/~}\033\\"'
+                ;;
+esac
+
+use_color=false
+
+# Set colorful PS1 only on colorful terminals.
+# dircolors --print-database uses its own built-in database
+# instead of using /etc/DIR_COLORS.  Try to use the external file
+# first to take advantage of user additions.  Use internal bash
+# globbing instead of external grep binary.
+safe_term=${TERM//[^[:alnum:]]/?}   # sanitize TERM
+match_lhs=""
+[[ -f ~/.dir_colors   ]] && match_lhs="${match_lhs}$(<~/.dir_colors)"
+[[ -f /etc/DIR_COLORS ]] && match_lhs="${match_lhs}$(</etc/DIR_COLORS)"
+[[ -z ${match_lhs}    ]] \
+        && type -P dircolors >/dev/null \
+        && match_lhs=$(dircolors --print-database)
+[[ $'\n'${match_lhs} == *$'\n'"TERM "${safe_term}* ]] && use_color=true
+
+if ${use_color} ; then
+        # Enable colors for ls, etc.  Prefer ~/.dir_colors #64489
+        if type -P dircolors >/dev/null ; then
+                if [[ -f ~/.dir_colors ]] ; then
+                        eval $(dircolors -b ~/.dir_colors)
+                elif [[ -f /etc/DIR_COLORS ]] ; then
+                        eval $(dircolors -b /etc/DIR_COLORS)
+                fi
+        fi
+
+	function bash_git_branch
+	{
+		git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
+	}
+
+        if [[ ${EUID} == 0 ]] ; then
+#               Red Gentoo classic
+                PS1='\[\033[01;31m\]\h\[\033[01;34m\] \W \[\033[0;32m\]$(bash_git_branch)\[\033[00m\] \$\[\033[00m\] '
+        else
+#               Green Gentoo classic non-root
+#               PS1='\[\033[01;32m\]\u@\h\[\033[01;34m\] \w \[\033[0;32m\]$(bash_git_branch)\[\033[00m\] \$\[\033[00m\] '
+#               Wet yellow sand
+                PS1='\[\033[00;33m\]\u@\h\[\033[00;33m\] \w \[\033[0;32m\]$(bash_git_branch)\[\033[00m\] \$\[\033[00m\] '
+        fi
+
+        alias ls='ls --color=auto'
+        alias grep='grep --colour=auto'
+        alias egrep='egrep --colour=auto'
+        alias fgrep='fgrep --colour=auto'
+else
+        if [[ ${EUID} == 0 ]] ; then
+                # show root@ when we don't have colors
+                PS1='\u@\h \W \$ '
+        else
+                PS1='\u@\h \w \$ '
+        fi
+fi
+
+# Try to keep environment pollution down, EPA loves us.
+unset use_color safe_term match_lhs
+
+# History behaviour settings.
+export HISTTIMEFORMAT="%h %d %H:%M:%S> "
+export HISTCONTROL=ignoredups
+export HISTSIZE=10000
+
+# Aliases.
+
+# Functions.
+# System-wide functions
+function showqueue { netstat -tn |grep :$1 | awk -v port=$1 '{recv += $2} {send += $3} END {print "Port: "port" Recv-Q: "recv" Send-Q: "send}'; }
+
+# PostgreSQL related function
+function sr_monitor91 { watch -n ${1:-5} "psql -h 127.0.0.1 -U postgres -c 'select procpid,usesysid,application_name,client_addr,backend_start,state,sent_location,write_location,replay_location,sync_state from pg_stat_replication order by 5'"; }
+function sr_monitor92 { watch -n ${1:-5} "psql -h 127.0.0.1 -U postgres -c 'select pid,usesysid,application_name,client_addr,backend_start,state,sent_location,write_location,replay_location,sync_state,pg_xlog_location_diff(sent_location, replay_location) as bytes from pg_stat_replication order by 5'"; }
+
+# PgBouncer related function. Attention
+function pgb_console {
+  if [[ $# -eq 0 ]];
+    then psql -h 127.0.0.1 -p 6432 -U root pgbouncer;
+    else psql -h 127.0.0.1 -p 6432 -U root pgbouncer -c "$*";
+  fi;
+}
+
+export -f showqueue	# showqueue is used for watching the queue's total size for the specified network port.
+export -f sr_monitor91	# streaming replication monitor for PostgreSQL 9.1 and earlier.
+export -f sr_monitor92	# streaming replication monitor for PostgreSQL 9.2 and never
+export -f pgb_console	# fast access to pgBouncer console
+
+# Others
+export PATH="$PATH:~/bin"
+export pg_log="/var/log/postgresql/postgresql-`date +%Y-%m-%d`.log"
+export pgb_log="/var/log/postgresql/pgbouncer.log"
