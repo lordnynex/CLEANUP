@@ -1,0 +1,5 @@
+FROM <%= @rootfs_base_img %>
+COPY copy /
+ENTRYPOINT [ \
+  "/usr/local/bin/mkimg" \
+]

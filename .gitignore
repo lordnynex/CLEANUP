@@ -1,0 +1,14 @@
+/.pryrc
+/.bundle
+/repos
+/coverage
+/objects.txt
+/Gemfile.lock
+/features
+/.analysis
+/opts.yml
+/.hidden
+/vendor
+/data
+/copy
+/tmp
