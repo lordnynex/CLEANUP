@@ -1,0 +1,203 @@
+{
+   "base_url" : "http://localhost:9200/",
+   "version" : "0.20.2",
+   "methods" : {
+      "welcome" : {
+         "path" : "/",
+         "method" : "GET"
+      },
+      "create_index" : {
+          "path" : "/:index",
+          "method" : "PUT",
+          "required_params" : [
+            "index"
+          ]
+      },
+      "delete_index" : {
+          "path" : "/:index",
+          "method" : "DELETE",
+          "required_params" : [
+             "index"
+          ]
+       },
+       "put_mapping" : {
+           "path" : "/:index/:type/_mapping",
+           "method" : "PUT",
+           "required_params" : [
+             "index",
+             "type"
+           ]
+        },
+        "get_mapping" : {
+            "path" : "/:index/:type/_mapping",
+            "method" : "GET",
+            "optional_params" : [
+              "index",
+              "type"
+            ]
+        },
+        "delete_mapping" : {
+            "path" : "/:index/:type",
+            "method" : "DELETE",
+            "required_params" : [
+               "index",
+               "type"
+            ]
+         },
+        "index" : {
+            "path" : "/:index/:type/:id",
+            "method" : "POST",
+            "required_params" : [
+              "index",
+              "type"
+            ],
+            "optional_params" : [
+              "id"
+            ]
+        },
+        "search" : {
+            "path" : "/:index/:type/_search",
+            "method" : "POST",
+            "optional_params" : [
+               "index",
+               "type"
+            ]
+        },
+        "delete" : {
+            "path" : "/:index/:type/:id",
+            "method" : "DELETE",
+            "required_params" : [
+               "index",
+               "type",
+               "id"
+            ],
+            "expected_status" : [ 200, 201, 404 ]
+        },
+        "analyze" : {
+            "path" : "/_analyze",
+            "method" : "POST"
+        },
+        "multi_search" : {
+            "path" : "/:index/:type/_msearch",
+            "method" : "GET",
+            "optional_params" : [
+               "index",
+               "type"
+            ]
+        },
+        "count" : {
+            "path" : "/:index/:type/_count",
+            "method" : "POST",
+            "optional_params" : [
+               "index",
+               "type"
+            ]
+        },
+        "status" : {
+            "path" : "/:index/_status",
+            "method" : "GET",
+            "optional_params" : [
+               "index"
+            ]
+        },
+        "shutdown" : {
+            "path" : "/_cluster/nodes/:nodes/_shutdown",
+            "method" : "POST",
+            "optional_params" : [
+               "nodes"
+            ]
+        },
+        "nodes_stats" : {
+            "path" : "/_nodes/:nodes/stats/:stat",
+            "method" : "GET",
+            "optional_params" : [
+               "nodes",
+               "stat"
+            ]
+        },
+       "nodes_info" : {
+           "path" : "/_nodes/:nodes/:info",
+           "method" : "GET",
+           "optional_params" : [
+               "nodes",
+               "info"
+           ]
+       },
+        "hot_threads" : {
+            "path" : "/_nodes/:nodes/hot_threads",
+            "method" : "GET",
+            "optional_params" : [
+               "nodes"
+            ]
+        },
+        "cluster_state" : {
+            "path" : "/_cluster/state",
+            "method" : "GET"
+        },
+        "cluster_health" : {
+            "path" : "/_cluster/health/:index",
+            "method" : "GET",
+            "optional_params" : [
+               "index"
+            ]
+        },
+        "cluster_settings" : {
+            "path" : "/_cluster/settings",
+            "method" : "GET"
+        },
+        "put_cluster_settings" : {
+            "path" : "/_cluster/settings",
+            "method" : "PUT"
+        },
+       "index_settings" : {
+           "path" : "/:index/_settings",
+           "method" : "GET",
+           "optional_params" : [
+               "index"
+           ]
+       },
+       "index_put_settings" : {
+           "path" : "/:index/_settings",
+           "method" : "PUT",
+           "optional_params" : [
+               "index"
+           ]
+       },
+       "index_stats" : {
+           "path" : "/:index/_stats/:stat/:option/:type",
+           "method" : "GET",
+           "optional_params" : [
+               "index",
+               "stat",
+               "option",
+               "type"
+           ]
+       },
+       "index_stats_options" : {
+           "path" : "/:index/_stats/:stat/:option/:type?flush=:flush&merge=:merge&refresh=:refresh",
+           "method" : "GET",
+           "optional_params" : [
+               "index",
+               "stat",
+               "option",
+               "type",
+               "flush",
+               "merge",
+               "refresh"
+           ]
+       },
+       "flush" : {
+           "path" : "/:index/_flush",
+           "method" : "GET",
+           "optional_params" : [
+               "index"
+           ]
+		}
+   },
+   "expected_status" : [ 200, 201 ],
+   "name" : "Elasticsearch",
+   "authority" : "http://elasticsearch.org/SPORE",
+   "meta" : {
+      "documentation" : "http://www.elasticsearch.org/"
+   }
+}
