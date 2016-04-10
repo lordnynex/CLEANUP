@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+# set -e
 
 # A hacky script to cleanup my github account
 #  - brandon beveridge
