@@ -1,0 +1,39 @@
+#!/bin/bash
+
+#
+# post deploy script
+# 
+# @author    xico@simbio.se
+# @copyright Simbiose
+# @license   LGPL version 3.0, see LICENSE
+#
+
+export ENV=$1
+export PATH="$PATH:$HOME/bin"
+export CURRENT=$(pwd)
+
+function err { echo "$(tput bold)$(tput setaf 1)$(tput setab 0)$1$(tput sgr0)" >&2; }
+
+function puts { echo "$(tput bold)$(tput setaf 4)$(tput setab 0)$1$(tput sgr0)"; }
+
+# bash 4 please
+[[ BASH_VERSINFO[0] -lt 4 ]] && { err "sorry, you need at least bash 4."; exit 1; }
+
+[[ -z "$ENV" ]] && { err "environment not provided!"; exit 1; }
+
+function conf_val () {
+  grep "^\[$ENV" -A 20 config.conf | sed -e '/./!Q' | grep "^$1" | head -n 1 | cut -d ' ' -f 2-999
+}
+
+[ -d "$HOME/bin" ] || mkdir -p "$HOME/bin"
+
+mkdir -p $SHARED/conf
+cp $CURRENT/app/nginx.conf $SHARED/conf/nginx.conf
+
+HOST=$(conf_val host)
+
+sed -i "s|{SHARED}|$SHARED|g"   $SHARED/conf/nginx.conf
+sed -i "s|{CURRENT}|$CURRENT|g" $SHARED/conf/nginx.conf
+sed -i "s|{HOST}|$HOST|g"       $SHARED/conf/nginx.conf
+
+[[ $1 == "production" ]] && ln -sf $SHARED/conf/nginx.conf /etc/nginx/sites-enabled/peabiru.conf
