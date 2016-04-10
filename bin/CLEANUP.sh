@@ -197,7 +197,7 @@ function collapse_forks() {
     # Add & Commit before merging the subtree
     # $GIT add $repo/
     # $GIT commit -m "[COLLAPSE] Add fork of ${REPO_NAME} to tree."
-    # echo "Running $GIT subtree add --prefix ${SUBTREE_PATH}/tree ${PARENT_CLONE_URL} master --squash"
+    echo "Running $GIT subtree add --prefix ${SUBTREE_PATH}/tree ${PARENT_CLONE_URL} master --squash"
     $GIT subtree add --prefix ${SUBTREE_PATH}/tree ${PARENT_CLONE_URL} master --squash
   done
 
