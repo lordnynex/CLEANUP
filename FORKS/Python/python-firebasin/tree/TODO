@@ -1,0 +1,4 @@
+* Fix querys breaking when you subscribe to a parent with a consuming querys and ensure child_removed is triggered when needed
+* Implemented transaction( )
+* Implement the context parameter on all applicable methods
+* Write formal tests!
