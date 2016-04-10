@@ -168,16 +168,17 @@ function collapse_forks() {
 
       case $response in
         200)
-          return
+          continue
           ;;
         401)
           msg=$(cat $GH_AUTH_TMP | jq -r '.message')
           echo "ERROR: ${msg}"
-          exit 1
+          return 1
           ;;
         *)
           echo "An error occured!"
           cat $GH_REPOS_TMP | jq -C .
+          return 1
       esac
     fi
   done
@@ -187,17 +188,21 @@ function collapse_forks() {
 
   # Walk for any new additions
   for repo in `find ./${FORK_DIR_NAME} -mindepth 2 -maxdepth 2 -type d '!' -exec test -d '{}/tree/' ';' -print`; do
+    REPO_NAME=$(basename $repo)
     SUBTREE_PATH=$(echo $repo | sed -e 's/^\.\///g')
-    REPO_NAME=$(echo $repo | split -d'/' -f 3)
 
     # Extract original parent clone url
     PARENT_CLONE_URL=$(cat ${repo}/repo_detail.json | jq -r '.parent.clone_url')
 
     # Add & Commit before merging the subtree
-    $GIT add $repo/
-    $GIT commit -m "[COLLAPSE] Add fork of ${REPO_NAME} to tree."
+    # $GIT add $repo/
+    # $GIT commit -m "[COLLAPSE] Add fork of ${REPO_NAME} to tree."
+    # echo "Running $GIT subtree add --prefix ${SUBTREE_PATH}/tree ${PARENT_CLONE_URL} master --squash"
     $GIT subtree add --prefix ${SUBTREE_PATH}/tree ${PARENT_CLONE_URL} master --squash
   done
+
+  $GIT add .
+  $GIT commit -m "[COLLAPSE] Add subtree forks"
 }
 
 if [ -z ${GH_CLEANUP_TOKEN+x} ]; then
