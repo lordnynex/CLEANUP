@@ -1,0 +1,38 @@
+luacv
+=====
+
+This is our internal fork of LuaCV: http://sourceforge.net/projects/luacv/
+
+This is what we use to scale images etc.
+
+
+README for LuaCV
+================
+
+  What is LuaCV?
+  --------------
+  LuaCV is OpenCV library wrapper for Lua language. Main goal is to access fast 
+  image processing library to light-weight, non-type language.
+  Thanks to CMake project is a much easier to compile it under many OS platforms 
+  which are currently supported by OpenCV.
+  LuaCV is being developed as a master thesis at Brno University of Technology
+  in Czech Republic.
+
+  Availability
+  ------------
+  LuaCV is freely available for both academic and commercial purposes.
+  See LICENSE for details. LuaCV can be downloaded from 
+  http://sourceforge.net/projects/luacv
+
+  Installation
+  ------------
+  LuaCV is implemented in C++ and can be compiled at all platforms that are 
+  supported by OpenCV. Cmake is necessary for proper build, but you can always make
+  your own Makefile to avoid it. See INSTALL for exact installation instructions.
+  There is installer with binaries for Windows users available on sourceforge. 
+
+  Samples
+  -------
+  There are sample scripts in directory sample/ which show basic usage of LuaCV
+  wrapper. Most of them are copy of C/C++ samples from OpenCV rewritten to Lua.
+  So if you want compare complexity of both version go to OpenCV directory/samples/c.
