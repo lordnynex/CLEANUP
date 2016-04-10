@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+PIP_COMMAND="pip"
+
+if [[ ! $(which $PIP_COMMAND) ]]; then
+  echo "Error: $PIP_COMMAND command not found, you can install like this:"
+  echo "  $ easy_install pip"
+  exit 1
+fi
+
+if [[ ! $(which pyspark) ]]; then
+  echo "Error: pyspark command not found, you need install Apache Spark first. For example:"
+  echo "  $ brew install apache-spark"
+  exit 1
+fi
+
+if [[ ! $(which nosetests) ]]; then
+  echo "Error: nosetests command not found, you can install like this:"
+  echo "  $ pip install nose"
+  exit 1
+fi
+
+if [[ -z "$SPARK_HOME" ]]; then
+  echo "Error: SPARK_HOME is not set, you can set like this:"
+  echo "  $ export SPARK_HOME=/usr/local/Cellar/apache-spark/1.4.1/libexec"
+  exit 1
+fi
+
+mkdir -p .pipcache
+$PIP_COMMAND install . --download .pipcache -q
+$PIP_COMMAND install . --no-index --find-links .pipcache --target .packages -q
+
+PYTHONPATH=$(pwd)/.packages:$SPARK_HOME/python:$(echo $SPARK_HOME/python/lib/py4j-*-src.zip):$PYTHONPATH nosetests -v "$@"
