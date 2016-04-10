@@ -1,0 +1,23 @@
+#!/usr/bin/env python
+
+import os
+import sys
+
+from make_deb import DebianConfiguration, DebianConfigurationException
+
+reload(sys)
+sys.setdefaultencoding('UTF8')
+
+def main():
+    try:
+        debconf = DebianConfiguration(os.getcwd())
+        debconf.render()
+    except DebianConfigurationException as e:
+        print(e)
+        return 1
+
+    print("'debian' directory successfully placed at the root of your repository")
+    return 0
+
+if __name__ == "__main__":
+    sys.exit(main())
