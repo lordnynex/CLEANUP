@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -xe
+set -e
 
 # A hacky script to cleanup my github account
 #  - brandon beveridge
@@ -22,20 +22,16 @@ ROOT_DIR=$($GIT rev-parse --show-toplevel)
 
 # Github username
 GH_USERNAME=lordnynex
-# echo -ne "Github user $GH_USERNAME"
-# echo -n "password: "
-# read -s GH_PASSWORD
-# echo
-
-# if [ "${GH_PASSWORD}" == "" ]; then
-#   exit
-# fi
+GH_PASSWORD=""
+GH_AUTH_TOKEN=""
+GH_MFA_TOKEN=""
 
 # Avoid bashing the github API multiple times
 # Store the output in a temp file so we can
 # make multiple passes
 GH_REPOS_TMP=$(mktemp)
 GH_FORKS_TMP=$(mktemp -d)
+GH_AUTH_TMP=$(mktemp)
 
 # Misc vars
 FORK_DIR_NAME=FORKS
@@ -43,21 +39,84 @@ FORK_DIR_NAME=FORKS
 # Runtime vars
 FORKS_DIR="${ROOT_DIR}/${FORK_DIR_NAME}"
 
+function cleanup() {
+  echo
+  echo "Cleaning up temporary files"
+  rm -rf ${GH_REPOS_TMP} ${GH_FORKS_TMP}
+
+  echo "Ensuring authentication scratch pad is removed"
+  if [ -f "${GH_AUTH_TMP}" ]; then
+    rm -rf ${GH_AUTH_TMP}
+  fi
+}
+
 # Define a trap to remove this temp file on
 # exit.
-trap "rm -rf ${GH_REPOS_TMP} ${GH_FORKS_TMP}" EXIT
+trap cleanup EXIT
 
-# function authenticate() {
-#
-# }
+function authenticate() {
+  echo -n "Github Username: "
+  read GH_USERNAME
+
+  if [ "${GH_USERNAME}" == "" ]; then
+    echo "Can not continue authentication with no username..."
+    exit 1
+  fi
+
+  echo -n "Github Password: "
+  read -s GH_PASSWORD
+  echo
+
+  if [ "${GH_PASSWORD}" == "" ]; then
+    echo "Can not continue authentication with no password..."
+    exit
+  fi
+
+  response=$(
+    curl \
+      --silent \
+      --write-out %{http_code} \
+      -X POST \
+      -u $GH_USERNAME:$GH_PASSWORD \
+      -H 'Content-Type: application/json' \
+      -d '{"scopes": ["user:email"],"note": "Fork Consolidator"}' \
+      https://api.github.com/authorizations -o "${GH_AUTH_TMP}"
+  )
+
+  case $response in
+    401)
+      msg=$(cat $GH_AUTH_TMP | jq -r '.message')
+      echo "ERROR: ${msg}"
+      exit 1
+      break
+  esac
+}
 
 # Fetch my public repos
 function fetch_repos() {
   # type=source includes forks for some reason. I guess this only works for orgs
-  $CURL -s https://api.github.com/users/${GH_USERNAME}/repos -o $GH_REPOS_TMP
+  response=$(
+    curl \
+      --silent \
+      --write-out %{http_code} \
+      -X GET \
+      -u $GH_AUTH_TOKEN:x-oauth-basic \
+      https://api.github.com/users/${GH_USERNAME}/repos -o $GH_REPOS_TMP
+  )
 
-  # Check for rate limiting
-
+  case $response in
+    200)
+      return
+      ;;
+    401)
+      msg=$(cat $GH_AUTH_TMP | jq -r '.message')
+      echo "ERROR: ${msg}"
+      exit 1
+      ;;
+    *)
+      echo "An error occured!"
+      cat $GH_REPOS_TMP | jq -C .
+  esac
 }
 
 # Find repos that are forks and collapse them into this repo as submodules
@@ -98,7 +157,28 @@ function collapse_forks() {
     # Fetch repo info which contains parent info
     # Be nice to the github API
     if [ ! -f "${DIR_REPO_TREE}/repo_detail.json" ]; then
-      $CURL -s $REPO_URL -o ${DIR_REPO_TREE}/repo_detail.json
+      response=$(
+        curl \
+          --silent \
+          --write-out %{http_code} \
+          -X GET \
+          -u $GH_AUTH_TOKEN:x-oauth-basic \
+          $REPO_URL -o ${DIR_REPO_TREE}/repo_detail.json
+      )
+
+      case $response in
+        200)
+          return
+          ;;
+        401)
+          msg=$(cat $GH_AUTH_TMP | jq -r '.message')
+          echo "ERROR: ${msg}"
+          exit 1
+          ;;
+        *)
+          echo "An error occured!"
+          cat $GH_REPOS_TMP | jq -C .
+      esac
     fi
   done
 
@@ -120,6 +200,32 @@ function collapse_forks() {
   done
 }
 
-authenticate
-fetch_repos
-collapse_forks
+if [ -z ${GH_CLEANUP_TOKEN+x} ]; then
+  # authenticate
+  echo "Not supporting manual auth right now because of MFA complexities..."
+  exit 1
+else
+  echo "Bypassing authentication and using detected personal access token..."
+  GH_AUTH_TOKEN=$GH_CLEANUP_TOKEN
+fi
+
+response=$(
+  curl \
+    --silent \
+    --write-out %{http_code} \
+    -X GET \
+    -u $GH_AUTH_TOKEN:x-oauth-basic \
+    https://api.github.com/user -o "${GH_AUTH_TMP}"
+)
+
+case $response in
+  401)
+    msg=$(cat $GH_AUTH_TMP | jq -r '.message')
+    echo "ERROR: ${msg}"
+    exit 1
+    ;;
+  *)
+    echo "Credentials are valid. Continuing"
+    fetch_repos
+    collapse_forks
+esac
