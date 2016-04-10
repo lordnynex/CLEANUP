@@ -1,0 +1,6 @@
+install:
+	IF NOT EXIST "$(LUA_LUADIR)" mkdir "$(LUA_LUADIR)"
+	IF NOT EXIST "$(LUA_LUADIR)/socket-io" mkdir "$(LUA_LUADIR)/socket-io"
+	IF NOT EXIST "$(LUA_LUADIR)/socket-io/socket.io-client" mkdir "$(LUA_LUADIR)/socket-io/socket.io-client"
+	xcopy socket-io "$(LUA_LUADIR)/socket-io" /S
+	xcopy socket.io-client "$(LUA_LUADIR)/socket-io/socket.io-client" /S
