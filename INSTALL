@@ -1,0 +1,78 @@
+This file is to help you configure, build and install Gource for your system.
+
+Contents
+========
+
+1. Dependencies
+2. Building
+3. Configure Options
+
+1. Dependencies
+===============
+
+Gource requires the following libraries to compile (package names may vary):
+
+    SDL 2.0 (libsdl2-dev)
+    SDL Image 2.0 (libsdl2-image-dev)
+    PCRE (libpcre3-dev)
+    Freetype 2 (libfreetype6-dev)
+    GLEW (libglew-dev)
+    GLM >= 0.9.3 (libglm-dev)
+    Boost Filesystem >= 1.46 (libboost-filesystem-dev)
+    PNG >= 1.2 (libpng12-dev)
+
+    If SDL 2.0 is unavailable you can still use SDL 1.2, but this is deprecated:
+
+    SDL 1.2 (libsdl1.2-dev)
+    SDL Image 1.2 (libsdl-image1.2-dev)
+
+Optional:
+
+   TinyXML (libtinyxml-dev)
+
+SDL Image needs to have been built with support PNG and JPEG images.
+
+GLM is a header only library that you can get from http://glm.g-truc.net/ if your distribution does not include it.
+
+2. Building
+===========
+
+Gource requires a GNU compatible C++ compiler that supports c++0x features such as 'auto' and the new 'for' loop syntax.
+
+GCC 4.6+ or Clang recommended.
+
+If you got the source directly from the Gource.git repository, you will first
+need to run autogen.sh which will generate the configure script and
+initialize and update the submodules.
+
+    ./autogen.sh
+
+Generic build instructions for Linux/Mac OS:
+
+    ./configure
+    make
+    make install
+
+Building on Windows:
+
+On Windows I recommend compiling the project file gource.win32.cbp
+for the Code Blocks IDE (www.codeblocks.org).
+
+A pre-built version for Windows is normally available from the homepage.
+
+Gource expects SDL to have been built with the NO_STDIO_REDIRECT flag.
+
+3. Configure Options
+====================
+
+By default Gource will install some GNU FreeFont TTF Fonts on your system.
+
+If you already have these fonts, you can configure Gource to use them with:
+
+    ./configure --enable-ttf-font-dir=/path/to/freefont/
+
+Gource includes a copy of the TinyXML library. To make Gource build against
+the system library of TinyXML use:
+
+    ./configure --with-tinyxml
+
