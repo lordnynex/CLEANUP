@@ -1,0 +1,28 @@
+{
+  "name": "es6-native-set",
+  "version": "3.5.1",
+  "description": "Native es6 set for Node",
+  "main": "./index.js",
+  "keywords": [
+    "set",
+    "es6",
+    "container"
+  ],
+  "author": {
+    "name": "Chad Walker",
+    "email": "chad@chad-cat-lore-eddie.com",
+    "url": "https://github.com/chad3814"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/chad3814/node-native-set.git"
+  },
+  "license": "MIT",
+  "scripts": {
+    "install": "node-gyp configure build",
+    "test": "runtests test/*.js"
+  },
+  "dependencies": {
+    "nan": "^2.1.0"
+  }
+}
