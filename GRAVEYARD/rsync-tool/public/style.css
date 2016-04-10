@@ -1,0 +1,84 @@
+/* html body tag style */
+body {
+    margin: 0px;
+    padding: 0px;
+}
+
+/* h1 tag style */
+h1 {
+    margin: 0px;
+    padding: 0px;
+    font-family: arial;
+    font-size: 300%;
+    color: #CCCCCC;
+}
+
+h2 {
+	margin: 0;
+	padding: 0;
+	font-family: arial;
+	font-size: 150%;
+	color: #DDDDDD;
+}
+
+/* CSS Style Rule for Div having id="outer-container" */
+/* outer-container will hold the whole assembly of
+   nested div overlays. */
+/* It will also center align the design */
+#outer-container {
+    width: 770px;
+    margin: 0 auto;
+}
+
+/* header CSS Style Rule */
+#header {
+    width: 770px;
+    height: 90px;
+    background-color: #FFFFFF;
+}
+
+/* footer CSS Style Rule */
+#footer {
+    width: 770px;
+    background-color: #FFFFFF;
+}
+
+/* Top navigation CSS Style Rule */
+#top-Nav {
+    width: 770px;
+    background-color: #FFFFFF;
+    margin: 2px 0px 2px 0px;
+}
+
+/* content-container CSS Style Rule */
+/* It will hold the main content of the page. */
+#content-container {
+    width: 770px;
+    height: 400px;
+    background-color: #FFFFFF;
+    margin: 0px 0px 0px 0px;
+}
+
+pre {
+	font-size: 12px;
+	padding: 0;
+	margin: 0;
+	background: #f0f0f0;
+	border-left: 1px solid #ccc;
+	border-bottom: 1px solid #ccc;
+	line-height: 20px; /*--Height of each line of code--*/
+	background: url(pre_code_bg.gif) repeat-y left top; /*--Background of lined paper--*/
+	width: 600px;
+	overflow: auto; /*--If the Code exceeds the width, a scrolling is available--*/
+	overflow-Y: hidden;  /*--Hides vertical scroll created by IE--*/
+}
+pre code {
+	margin: 0 0 0 40px;  /*--Left Margin--*/
+	padding: 18px 0;
+	display: block;
+}
+
+a:link {color: #CCCCCC; text-decoration: none; }
+a:active {color: #CCCCCC; text-decoration: none; }
+a:visited {color: #CCCCCC; text-decoration: none; }
+a:hover {color: #000000; text-decoration: none; }
