@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -xe
 
 # A hacky script to cleanup my github account
 #  - brandon beveridge
@@ -22,6 +22,14 @@ ROOT_DIR=$($GIT rev-parse --show-toplevel)
 
 # Github username
 GH_USERNAME=lordnynex
+# echo -ne "Github user $GH_USERNAME"
+# echo -n "password: "
+# read -s GH_PASSWORD
+# echo
+
+# if [ "${GH_PASSWORD}" == "" ]; then
+#   exit
+# fi
 
 # Avoid bashing the github API multiple times
 # Store the output in a temp file so we can
@@ -39,10 +47,17 @@ FORKS_DIR="${ROOT_DIR}/${FORK_DIR_NAME}"
 # exit.
 trap "rm -rf ${GH_REPOS_TMP} ${GH_FORKS_TMP}" EXIT
 
+# function authenticate() {
+#
+# }
+
 # Fetch my public repos
 function fetch_repos() {
   # type=source includes forks for some reason. I guess this only works for orgs
   $CURL -s https://api.github.com/users/${GH_USERNAME}/repos -o $GH_REPOS_TMP
+
+  # Check for rate limiting
+
 }
 
 # Find repos that are forks and collapse them into this repo as submodules
@@ -105,5 +120,6 @@ function collapse_forks() {
   done
 }
 
+authenticate
 fetch_repos
 collapse_forks
