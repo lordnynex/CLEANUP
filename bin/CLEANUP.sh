@@ -91,14 +91,17 @@ function collapse_forks() {
   find ${FORKS_DIR} -maxdepth 1 -type d '!' -exec test -e "{}/.gitkeep" ';' -exec touch "{}/.gitkeep" ';'
 
   # Walk for any new additions
-  for repo in `find ${FORK_DIR_NAME} -mindepth 2 -maxdepth 2 -type d '!' -exec test -d '{}/tree/' ';' -print`; do
+  for repo in `find ./${FORK_DIR_NAME} -mindepth 2 -maxdepth 2 -type d '!' -exec test -d '{}/tree/' ';' -print`; do
+    SUBTREE_PATH=$(echo $repo | sed -e 's/^\.\///g')
+    REPO_NAME=$(echo $repo | split -d'/' -f 3)
+
     # Extract original parent clone url
     PARENT_CLONE_URL=$(cat ${repo}/repo_detail.json | jq -r '.parent.clone_url')
 
     # Add & Commit before merging the subtree
     $GIT add $repo/
-    $GIT commit -m '[COLLAPSE] Add fork to tree.'
-    $GIT subtree add --prefix ${repo}/tree ${PARENT_CLONE_URL} master --squash
+    $GIT commit -m "[COLLAPSE] Add fork of ${REPO_NAME} to tree."
+    $GIT subtree add --prefix ${SUBTREE_PATH}/tree ${PARENT_CLONE_URL} master --squash
   done
 }
 
