@@ -1,0 +1,8 @@
+---
+- name: Create server plugin folders
+  file: path=/srv/minecraft/{{ serverSubDir }}/backend/{{ item.value.instanceDir }}/plugins state=directory owner=minecraft group=minecraft mode=0755
+  with_dict: servers
+
+- include: PermissionsEx.yml
+- include: Essentials.yml
+- include: WorldEdit.yml

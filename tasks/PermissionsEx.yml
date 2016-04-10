@@ -1,0 +1,22 @@
+---
+- name: Get PermissionsEx
+  get_url: url={{ PermissionsEx_url }} dest=/srv/minecraft/{{ serverSubDir }}/bin/permissionsex.jar owner=minecraft group=minecraft mode=0644
+
+- name: Install PermissionsEx
+  file: src=/srv/minecraft/{{ serverSubDir }}/bin/permissionsex.jar dest=/srv/minecraft/{{ serverSubDir }}/backend/{{ item.value.instanceDir }}/plugins/permissionsex.jar state=link
+  with_dict: servers
+
+- name: Create PermissionsEx configuration directory
+  file: path=/srv/minecraft/{{ serverSubDir }}/backend/{{ item.value.instanceDir }}/plugins/PermissionsEx state=directory owner=minecraft group=minecraft mode=0755
+  with_dict: servers
+
+- name: Configure PermissionsEx
+  copy: src=permissions.yml dest=/srv/minecraft/{{ serverSubDir }}/backend/{{ item.value.instanceDir }}/plugins/PermissionsEx/permissions.yml force=no owner=minecraft group=minecraft mode=0644
+  with_dict: servers
+
+- name: Get ModifyWorld
+  get_url: url={{ ModifyWorld_url }} dest=/srv/minecraft/{{ serverSubDir }}/bin/modifyworld.jar owner=minecraft group=minecraft mode=0644
+
+- name: Install ModifyWorld
+  file: src=/srv/minecraft/{{ serverSubDir }}/bin/modifyworld.jar dest=/srv/minecraft/{{ serverSubDir }}/backend/{{ item.value.instanceDir }}/plugins/modifyworld.jar state=link
+  with_dict: servers

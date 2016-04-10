@@ -1,0 +1,94 @@
+groups:
+  default:
+    default: true
+    permissions:
+    - essentials.tpdeny
+    - essentials.tpaccept
+    - modifyworld.chat
+    options:
+      rank: '1000'
+    inheritance: []
+  overlord:
+    permissions:
+    - bukkit.command.stop
+    - essentials.*
+    options:
+      rank: '1'
+    inheritance:
+    - mods
+    default: false
+  verified:
+    permissions:
+    - modifyworld.*
+    - essentials.tpaccept
+    - essentials.mail.send
+    - essentials.warp.*
+    - essentials.warp
+    - essentials.setwarp
+    - essentials.warp.list
+    - essentials.nick
+    - essentials.list
+    - essentials.mail
+    options:
+      rank: '950'
+    inheritance:
+    - default
+    default: false
+  terraformers:
+    permissions:
+    - worldedit.*
+    options:
+      rank: '800'
+    inheritance:
+    - timelords
+    default: false
+  mods:
+    permissions:
+    - essentials.mail.sendall
+    - essentials.tp.others
+    - essentials.tp
+    - essentials.vanish.see
+    - essentials.vanish
+    - essentials.nick.others
+    - essentials.kill.force
+    - essentials.kill
+    - essentials.nuke
+    - essentials.lightning.others
+    - essentials.lightning
+    - essentials.gamemode
+    - essentials.heal.*
+    - essentials.heal
+    - essentials.feed.*
+    - essentials.feed
+    - essentials.kick.notify
+    - essentials.kick
+    - essentials.jails
+    - essentials.togglejail.offline
+    - essentials.togglejail
+    - essentials.setjail
+    - essentials.delwarp
+    - essentials.warp.overwrite.*
+    options:
+      rank: '300'
+    inheritance:
+    - terraformers
+    default: false
+  timelords:
+    permissions:
+    - essentials.weather
+    - essentials.time
+    - essentials.time.*
+    options:
+      rank: '900'
+    inheritance:
+    - verified
+    default: false
+users:
+  b8bbbd1e-d896-3de9-bfdd-98d598c734a2:
+    permissions:
+    - permissions.*
+    options:
+      rank: overlord
+      name: maldridge
+    group:
+    - overlord

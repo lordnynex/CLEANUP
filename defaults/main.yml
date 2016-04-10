@@ -1,0 +1,35 @@
+---
+spigot_version: 1.8.7
+BuildTools_url: http://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar
+BungeeCord_url: http://ci.md-5.net/job/BungeeCord/lastSuccessfulBuild/artifact/bootstrap/target/BungeeCord.jar
+PermissionsEx_url: http://ci.nixium.com/job/PermissionsEx/lastSuccessfulBuild/artifact/target/PermissionsEx.jar
+ModifyWorld_url: http://dev.bukkit.org/media/files/730/259/Modifyworld.jar
+Essentials_url: https://hub.spigotmc.org/jenkins/job/Spigot-Essentials/lastSuccessfulBuild/artifact/Essentials/target/Essentials-2.x-SNAPSHOT.jar
+EssentialsSpawn_url: https://hub.spigotmc.org/jenkins/job/Spigot-Essentials/lastSuccessfulBuild/artifact/EssentialsSpawn/target/EssentialsSpawn-2.x-SNAPSHOT.jar
+WorldEdit_url: http://dev.bukkit.org/media/files/880/435/worldedit-bukkit-6.1.jar
+
+motd: "Minecraft Network"
+serverSubDir:
+
+servers:
+  lobby:
+    allowEnd: false
+    allowNether: false
+    levelName: world
+    instanceQueryEnabled: false
+    instancePort: 25570
+    instanceSeed:
+    instanceGamemode: 2
+    instanceMOTD: Hub
+    spawnNPCs: false
+    spawnAnimals: false
+    spawnMonsters: false
+    maxPlayers: 15
+    pvpEnabled: false
+    xrayEnable: false
+    minMemory: 128M
+    maxMemory: 256M
+    instanceDir: lobby
+
+inspircd_links_minecraft_recvpass: "{{ lookup('file', 'secret/inspircd_links_minecraft_sendpass') }}"
+inspircd_links_minecraft_sendpass: "{{ lookup('file', 'secret/inspircd_links_minecraft_recvpass') }}"
