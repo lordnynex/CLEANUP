@@ -1,0 +1,144 @@
+{% local util = require("util.util") %}
+
+<div class="pageContent">
+	<form method="post" action="/user/add_post" class="pageForm required-validate" 
+			{% if userinfo then %}
+				onsubmit="return validateCallback(this, dialogAjaxDone);" 
+			{% else %}
+				onsubmit="return validateCallback(this, dialogAjaxDoneEx);" 
+			{% end %}
+			>
+		<div class="pageFormContent" layoutH="60">
+			{% if userinfo then %}
+			<input type="hidden" name="id" value="{{userinfo.id}}">
+			<input type="hidden" name="manager" value="{{userinfo.manager}}">
+			{% end %}
+			<p class="row_add">
+				<label class="row_add">用户名：</label>				
+				<input name="username" class="required alphanumeric" type="text" size="30" 
+				{% if userinfo then %} value="{{userinfo.username}}" {% end %}
+				maxlength="64"/>
+			</p>			
+			<p class="row_add">
+				<label class="row_add">EMAIL：</label>
+				<input id="email" name="email" class="required email" type="text" 
+				{% if userinfo then %} value="{{userinfo.email}}" {% end %} size="30" maxlength="128"/>
+			</p>
+			<p class="row_add">
+				<label class="row_add">TEL:</label>
+				<input id="tel" name="tel" class="phone" type="text" 
+				{% if userinfo then %} value="{{userinfo.tel}}" {% end %} size="30" maxlength="16"/>
+			</p>
+			<p class="row_add">
+				<label class="row_add">应用:</label>
+				<select class="combox" name="app" style="width: 200px;">
+					{% for i, appinfo in ipairs(apps) do %}
+			      		<option value="{{appinfo.app}}" 
+						{% 
+						local select01 = userinfo and userinfo.app == appinfo.app
+						if select01 then %} 
+						selected="selected" 
+						{% end %}>
+						{{appinfo.appname}}</option>
+			      	{% end %}
+				</select>
+			</p>
+			{%	if cur_manager == "admin" then %}
+			<p class="row_add">
+				<label class="row_add">角色:</label>
+				<select class="combox" name="role_id" style="width: 200px;">
+					{% for i, roleinfo in ipairs(roles) do %}
+			      		<option value="{{roleinfo.id}}"
+			      		{% if userinfo and userinfo.role_id == roleinfo.id then %} selected="selected" {% end %}>{{roleinfo.name}}</option>
+			      	{% end %}
+				</select>
+			</p>			
+			<p class="row_add">
+				<table >
+					<tr>
+						<td valign="top"><label class="row_add">权限：</label></td>
+						<td valign="top">
+						<select id="permission" name="permission" multiple="multiple" size="8" style="width:150px;height: 120px;">
+							{% if userinfo and userinfo.user_permissions then 
+								for i, permission in ipairs(userinfo.user_permissions) do %} 
+							  <option value="{{permission}}" >
+							  	{{perm_map[permission] or permission}}
+							  </option>
+							{% end 
+							end %}
+						</select>
+						</td>
+						<td valign="top" align="center" width="50px">
+							<table width="100%" height="100%">
+								<tr height="30"><td align="center"><button type="button" onclick="javascript:perm_add_all();"> &lt;&lt; </button></td></tr>
+								<tr height="30"><td align="center"><button type="button" onclick="javascript:perm_add_sel();"> &lt; </button></td></tr>
+								<tr height="30"><td align="center"><button type="button" onclick="javascript:perm_del_sel();"> &gt; </button></td></tr>
+								<tr height="30"><td align="center"><button type="button" onclick="javascript:perm_del_all();"> &gt;&gt; </button></td></tr>								
+							</table>							
+						</td>
+						<td valign="top">
+						<select id="permission_others" name="permission_others" multiple="multiple" size="8" style="width:150px;height: 120px;">					
+							{% for i, perminfo in ipairs(permission_others) do %}
+							<option value="{{perminfo.id}}">{{perminfo.name}}</option>
+							{% end %}
+						</select>
+						</td>
+					</tr>
+				</table>				
+			</p>
+			{% end %}
+		</div>
+		<div class="formBar">
+			<ul>
+				<!--<li><a class="buttonActive" href="javascript:;"><span>保存</span></a></li>-->
+				<li><div class="buttonActive"><div class="buttonContent">
+					<button type="submit" onclick="return perm_select_all();">保存</button>
+					</div></div></li>
+				<li>
+					<div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div>
+				</li>
+				<li>&nbsp;&nbsp;&nbsp;&nbsp;</li>
+			</ul>
+		</div>
+	</form>
+</div>
+<script language="javascript">
+
+function perm_move(from, to, all){
+	var selfrom = document.getElementById(from);
+	var selto = document.getElementById(to);
+	var arrs = new Array();
+	for(i=0;i<selfrom.length;i++){
+		 if(all || selfrom.options[i].selected){
+            arrs.push(selfrom.options[i]);            
+        }
+	}
+	
+	for(i=0;i<arrs.length;i++){
+		selto.options.add(arrs[i]);
+	}
+}
+
+function perm_add_all(){
+	perm_move("permission_others", "permission", true);
+}
+function perm_add_sel(){
+	perm_move("permission_others", "permission");
+}
+function perm_del_all(){
+	perm_move("permission", "permission_others", true);
+}
+function perm_del_sel(){
+	perm_move("permission", "permission_others");
+}
+
+function perm_select_all(){
+	var sel = document.getElementById('permission');
+	for(i=0;i<sel.length;i++){
+		 sel.options[i].selected=true;
+	}
+	return true;	
+}
+
+
+</script>

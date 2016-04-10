@@ -1,0 +1,50 @@
+
+<div class="pageContent">
+	<form method="post" action="/perm/add_post" class="pageForm required-validate" 
+				onsubmit="return validateCallback(this, dialogAjaxDone);">
+		<div class="pageFormContent" layoutH="56">
+			{% if permission then %}<input type="hidden" name="update" value="true"/>{% end %}
+			<p class="row_add">
+				<label class="row_add">权限ID：</label>				
+				<input name="id" class="required alphanumeric" type="text" size="30"  
+				 {% if permission then %} value="{{permission.id}}" readonly="readonly"{% end %}/>
+				<span class="info">&nbsp;&nbsp;字母与下划线</span>
+			</p>
+			
+			<p class="row_add">
+				<label class="row_add">权限名称：</label>				
+				<input name="name" class="required" type="text" size="30" 
+					{% if permission then %} value="{{permission.name}}" {% end %}/>
+				<span class="info">&nbsp;&nbsp;便于理解中文</span>
+			</p>
+			<p class="row_add">
+				<label class="row_add">权限说明：</label>
+				<input id="remark" name="remark" type="text" size="30" 
+					{% if permission then %} value="{{permission.remark}}" {% end %}/>
+				<span class="info">&nbsp;&nbsp;中文说明</span>
+			</p>
+
+			<p class="row_add">
+				<label class="row_add">应用: </label>
+				<select class="combox" name="app" style="width:200px;">
+					{% for i, appinfo in ipairs(apps) do %}
+			      		<option value="{{appinfo.app}}" 
+						{% if permission and permission.app == appinfo.app then %} selected="selected" {% end %}>{{appinfo.appname}}</option>
+			      	{% end %}
+				</select>
+				<span class="info">&nbsp;&nbsp;所属应用 </span>
+			</p>
+	
+		</div>
+		<div class="formBar">
+			<ul>
+				<!--<li><a class="buttonActive" href="javascript:;"><span>保存</span></a></li>-->
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">保存</button></div></div></li>
+				<li>
+					<div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div>
+				</li>
+				<li>&nbsp;&nbsp;&nbsp;&nbsp;</li>
+			</ul>
+		</div>
+	</form>
+</div>

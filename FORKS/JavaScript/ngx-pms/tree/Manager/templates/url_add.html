@@ -1,0 +1,58 @@
+
+<div class="pageContent">
+	<form method="post" action="/url/add_post" class="pageForm required-validate" 
+				onsubmit="return validateCallback(this, dialogAjaxDone);">
+		<div class="pageFormContent" layoutH="60">
+			{% if urlinfo then %}
+			<input type="hidden" name="id" value="{{urlinfo.id}}">
+			{% end %}
+			<p class="row_add">
+				<label class="row_add">URL：</label>				
+				<input name="url" class="required" type="text" size="30" 
+				{% if urlinfo then %} value="{{urlinfo.url}}" {% end %}
+				maxlength="64"/>
+			</p>			
+			<p class="row_add">
+				<label class="row_add">匹配类型：</label>
+				<select class="combox" name="type" style="width:200px;">
+					{% for i, type in ipairs(types) do %}
+			      		<option value="{{type.id}}" 
+						{% if urlinfo and urlinfo.type == type.id then %} selected="selected" {% end %}>{{type.name}}</option>
+			      	{% end %}
+				</select>
+			</p>
+			<p class="row_add">
+				<label class="row_add">应用:</label>
+				<select class="combox" name="app" style="width:200px;">
+					{% for i, appinfo in ipairs(apps) do %}
+			      		<option value="{{appinfo.app}}" 
+						{% if urlinfo and urlinfo.app == appinfo.app then %} selected="selected" {% end %}>{{appinfo.appname}}</option>
+			      	{% end %}
+				</select>
+			</p>
+			<p class="row_add">
+				<label class="row_add">访问权限:</label>
+				<select class="combox" name="permission" style="width:200px;">
+					{% for i, permission in ipairs(permissions) do %}
+			      		<option value="{{permission.id}}" 
+						{% if urlinfo and urlinfo.permission == permission.id then %} selected="selected" {% end %}>{{permission.name}}</option>
+			      	{% end %}
+				</select>
+			</p>
+			
+			
+		</div>
+		<div class="formBar">
+			<ul>
+				<!--<li><a class="buttonActive" href="javascript:;"><span>保存</span></a></li>-->
+				<li><div class="buttonActive"><div class="buttonContent">
+					<button type="submit" onclick="return perm_select_all();">保存</button>
+					</div></div></li>
+				<li>
+					<div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div>
+				</li>
+				<li>&nbsp;&nbsp;&nbsp;&nbsp;</li>
+			</ul>
+		</div>
+	</form>
+</div>

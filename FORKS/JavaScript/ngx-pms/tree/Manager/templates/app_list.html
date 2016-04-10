@@ -1,0 +1,51 @@
+{% local util = require("util.util") %}
+<script language="javascript">
+	{% if errmsg then %}	
+		alertMsg.error("{{errmsg}}");
+	{% end %}
+</script>
+
+<form id="pagerForm" method="get" action="/app/list">
+	<input type="hidden" name="pageNum" value="{{pageNum}}" />
+	<input type="hidden" name="numPerPage" value="{{numPerPage}}" />
+</form>
+
+<div class="pageContent">
+	<div class="panelBar">
+		<ul class="toolBar">
+			<li><a class="add" href="/app/add" target="dialog" rel="dlg_addurl" width="480" height="350" title="添加应用"><span>添加</span></a></li>
+			<!--		
+			<li><a class="edit" href="/app/modify?app={app}" target="dialog" width="480" height="350" title="修改应用"><span>修改</span></a></li>
+		-->
+		</ul>
+	</div>
+	<table class="table" width="100%" layoutH="75">
+		<thead>
+			<tr>
+				<th width="80">应用ID</th>
+				<th width="100">应用名称</th>
+				<th width="200">备注说明</th>
+				<th width="100">创建日期</th>
+			</tr>
+		</thead>
+		<tbody>
+		{% if apps then %}
+		  {% for i, record in ipairs(apps) do %}
+			<tr target="app" rel="{{record.app}}">
+				<td>{{record.app}}</td>
+				<td>{{record.appname}}</td>
+				<td>{{record.remark}}</td>
+				<td>{{util.localtime(record.create_time)}}</td>
+			</tr>
+		  {% end %}
+		{% end %}
+		</tbody>
+	</table>
+	<div class="panelBar">
+		<div class="pages">
+			<span>显示{{numPerPage}}条，共{{totals}}条</span>
+		</div>
+		
+		<div class="pagination" targetType="navTab" totalCount="{{totals}}" numPerPage="{{numPerPage}}" pageNumShown="10" currentPage="{{pageNum}}">&nbsp;</div>
+	</div>
+</div>
