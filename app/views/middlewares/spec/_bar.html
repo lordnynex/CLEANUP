@@ -1,0 +1,25 @@
+
+<form class="middleware-search-form" ng-submit="search.find()">
+  <input name="search" class="middleware-search" type="search" placeholder="Search..." ng-model="search.query"/>
+  <button name="search-submit" type="submit" class="btn middleware-search-submit"><i class="icon-search"></i></button>
+</form>
+
+<h4 ng-show="search.query && search.page == 0 && !search.loading">Hit 'enter' to search</h4>
+
+<div class="middleware-list-wrap">
+
+  <ul class="middleware-list local">
+
+    <li class="middleware middleware-pipeline" ng-repeat="spec in search.specs" draggable="dragOptions">
+      <strong>{{  spec.name | truncate: 20 }}</strong> by <author github="spec.github_user" name="spec.author"/>
+      <div><em>{{  spec.description | truncate: 60 }}</em></div>
+    </li>
+  </ul>
+
+  <div class="middleware-loading loading btn-large" ng-show="search.loading">
+    <i class="icon-refresh icon-spin"></i> <span>Loading...</span>
+  </div>
+
+</div>
+<a ng-show="!search.loading && !search.done" class=" middleware-control btn" href ng-click="search.loadMore()">View More</a>
+<a ng-show="search.done" href disabled class="middleware-control search-done btn">No more results</a>
