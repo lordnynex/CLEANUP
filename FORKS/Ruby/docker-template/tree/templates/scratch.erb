@@ -1,0 +1,6 @@
+FROM scratch
+MAINTAINER <%= @maintainer %>
+ADD <%= @tar_gz %> /
+<% if @entrypoint %>
+  ENTRYPOINT ["<%= @entrypoint %>"]
+<% end %>
