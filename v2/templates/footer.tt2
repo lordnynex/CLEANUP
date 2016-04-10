@@ -1,0 +1,29 @@
+<div class="content-footer">
+<hr class="footer-sep"/>
+<div class="footer">
+  <p>[% c.l("Copyright © 2016 Yichun Zhang (agentzh)") %]</p>
+  <p>[% c.l("100% Powered by OpenResty and PostgreSQL") %]
+     [% c.l("(") %]<a href="https://github.com/openresty/openresty.org/">
+     [% c.l("view the source code of this site") %]</a>[% c.l(")") %]</p>
+</div>
+</div>
+
+<script src="/js/jquery.min.js"></script>
+<script src="/js/main.js"></script>
+
+<!-- Google analytics -->
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-24724965-1']);
+  //_gaq.push(['_setDomainName', 'openresty.org']);
+  _gaq.push(['_trackPageview']);
+
+  var ga_f = function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  };
+  setTimeout(ga_f, 0);
+
+</script>

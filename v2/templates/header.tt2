@@ -1,0 +1,16 @@
+<header role="header">
+        <p class="site-name left">
+                <a href=".">OpenResty</a>
+                <small>[% c.l("Scalable Web Platform by Extending NGINX with Lua") %]</small>
+        </p><!-- / site-name -->
+
+        <form action="search.html" class="right">
+                <fieldset>
+                        <input type="search" name="query" id="search"
+                               [%- IF search_query %]
+                               value="[% search_query | html %]"
+                               [%- END %]
+                               placeholder="[% c.l("Search OpenResty.org") %]" required>
+                </fieldset>
+        </form>
+</header>

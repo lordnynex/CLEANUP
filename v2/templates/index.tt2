@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>[% c.l("OpenResty - Official Site") %]</title>
+	<link href='https://openresty.org/css/fonts.css' rel='stylesheet' type='text/css'>
+	<!--
+	If you ever wanted to use LESS instead of CSS...
+	<link rel="stylesheet" type="text/less" href="/css/main.less">
+	<script src="/js/less.js"></script>
+	-->
+	<link rel="stylesheet" type="text/css" href="/css/main.css">
+        <script>
+[% PROCESS 'old-permlink-js.tt2' %]
+        </script>
+</head>
+<body>
+
+[% PROCESS 'header.tt2' %]
+
+	<section id="intro">
+		<div class="text">
+			<p>[% c.l("OpenResty is a dynamic web platform based on NGINX and LuaJIT.") %]</p>
+			<p><small>[% c.l("It’s open-source stuff so you can contribute:") %]</small>
+                           <a href="https://github.com/openresty/" class="github">[% c.l("Contribute on GitHub") %] &raquo;</a></p>
+		</div><!-- / text -->
+	</section><!-- / intro -->
+
+	<div id="wrapper">
+		<div class="sidebar sleft">
+			<nav id="nav">
+[% main_menu %]
+			</nav><!-- / nav -->
+
+[% PROCESS 'main-menu-buttons.tt2' %]
+
+		</div><!-- / sidebar left -->
+		
+		<section id="main">
+[% PROCESS 'post.tt2' %]
+		</section><!-- / main -->
+
+[% PROCESS 'sidebar.tt2' %]
+
+	</div><!-- / wrapper -->
+
+[% PROCESS 'footer.tt2' %]
+
+</body>
+</html>
