@@ -1,0 +1,147 @@
+# 0.7.4
+
+  * Bug fix for potential issues related to non-ASCII filter names
+  * Git SHA: 619ab48
+
+# 0.7.3
+
+  * Adding support for a bind\_address
+  * Git SHA: a0706a9
+
+# 0.7.2
+
+  * Fixing issue with flush and unmap being invoked too often due
+  to integer divide bug
+  * Git SHA: 455d38b
+
+# 0.7.1
+  * Increase the safety of connection handling. Prevents some crashing
+    conditions.
+  * Reduce checkpoint intervals from 1 second to 250 milliseconds. This
+    allows faster cleanups, and helps prevent "Delete in progress" errors.
+  * Git SHA: 5715bea
+
+# 0.7.0
+
+  * Major rewrite of the internal Multi-Version Concurrency Controll (MVCC).
+    The old system was based on a single map per version, along side a
+    vacuum thread to do periodic cleanup. This did not scale well as each version
+    had to copy the map of the last version, and since many versions could exist
+    concurrently, it is possible for the heap to explode to many hundreds of MB or
+    GB worth of just versioning information. Instead, we now maintain only 2 maps,
+    a "primary" and "alternate", and make use of a list of delta updates. The vacuum
+    thread now manages applying delta updates to the alternate map and rotating the
+    primary and alternate. This reduces the memory overhead, and reduces the cost
+    of creating a new version (create, drop, clear).
+  * List ordering is no defined due to delta lists
+  * Slow flush and unmap operations still allow vacuum to make progress
+  * Git SHA: 8dc38de
+
+# 0.6.6
+
+  * Bug fixes for filters with long prefixes
+  * Git SHA: dbce6b2
+
+# 0.6.5
+
+  * Replace internal hashmap with an Adaptive Radix Tree (ART). This
+  improves the create/drop time for instances with many many filters.
+  * `list` command now can take a prefix and returns only filters matching
+  * As a result of the ART tree, list results are sorted in descending order
+  * Git SHA: 238e85f
+
+# 0.6.1 (unreleased)
+
+  * Fixing thread safety issue with new-style memory buffers that
+    could potentially lead to either pages not being flushed, or
+    pages with no changes being re-flushed.
+
+# 0.6.0
+
+  * Optimize creation of new bitmaps. Dramatic speedup for create on
+    new filters, or doing a resize.
+  * Bloomd will no longer terminate if it fails to create a filter,
+    instead an internal error will be reported.
+  * More robust checkpointing mechanism to improve the safely of the
+    vacuum thread.
+  * `create` command can now return "Delete in progress" error. This
+    is to expose the fact that a previously issued delete or clear may
+    not yet be complete, and that the client should retry the create.
+    Previously, the system could run into internal consistency issues.
+  * Git SHA: 8f045fc
+
+# 0.5.1
+
+  * Added error message if the magic byte is incorrect
+  * Perform an early flush when filters are created to ensure
+    the config.ini file and bitmap headers are written
+  * Fixed possible crashing bug
+  * Fixed possible race condition in vacuum thread
+  * Fixing build issues on OSX 10.8
+  * Fixing validation of filter names
+  * Added link to RPM repo, thanks to @penpen
+  * Many bug fixes and improvements, thanks to @cemeyer
+  * Git SHA: da8d3c8
+
+# 0.5.0
+
+  * Adding `in_memory` flag for the info command. This avoids needing to use
+  a heuristic based on page_in / page_outs to determine the status of a filter.
+
+  * Filter manager uses a simple form of Multi-Version Concurrency Control (MVCC)
+  to enable progress to be made on operations in the face of potentially slow management
+  operations. Increases read concurrency within the filter manager.
+
+  * Changed networking from a leader/follower model to fixing connections to threads. This
+  reduces locking contention in the networking layer and enables much higher concurrency
+  in the workers.
+
+  * Adding new memory buffer management that gives bloomd more control as opposed to
+  relying on the kernel to flush buffers. This can now be controlled using a new `use_mmap`
+  flag. If this flag is not provided, it defaults to 0, which instructs bloomd to use anonymous
+  buffers and to manually manage flushing to disk. Otherwise, if it is 1, then files are mapped
+  in using MAP_SHARED, and msync() is used for flushing. The advatage of having bloomd manage
+  buffers is that under high I/O and memory pressure, the kernel will begin to block writes to
+  mapped memory until they can be paged to disk which causes availability issues. With our own
+  buffers, the flush thread will instead become increasingly behind, but the server can continue
+  to serve requests. The down side is, if bloomd were to crash, we will take data loss as the
+  buffers have not yet been written out. With MAP_SHARED buffers, the kernel will take care
+  to persist the data.
+
+  * Git SHA: 6dfd4b5
+
+# 0.1.5
+
+  * Several GCC compatibility changes to avoid unused result warnings on 4.7
+  * Bug fix that affects newer glibc versions regarding usage of writev()
+  * Fixed compatibility with Ubuntu 12.04
+  * Git SHA: 76dbc38
+
+# 0.1.4
+
+  * Added new `clear` command
+  * Git SHA: a904123
+
+# 0.1.3
+
+  * Fixed bug that would be encountered when switching to buffered
+    output that caused endless buffer resizing.
+  * Git SHA: 649c804
+
+# 0.1.2
+
+  * Flush command does not acquire read lock, remove the Disk I/O
+    bottleneck when flush is happening.
+  * Git SHA: f621be8
+
+# 0.1.1
+
+  * Fixed a bug with faulting in filters with multiple underlying data files
+    that would cause resizing to take place unnecessarily.
+  * Git SHA: c6c3b32
+
+# 0.1.0
+
+  * Initial Release
+  * Git SHA: 718a438
+
