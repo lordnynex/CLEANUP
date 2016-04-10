@@ -1,0 +1,5 @@
+- hosts:
+    - alpha
+    - beta
+  tasks:
+    - command: "echo Hello, world!"
