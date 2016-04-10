@@ -1,0 +1,25 @@
+<ipfixConfig>
+       	<ipfixCollector id="1">
+		<listener>
+			<transportProtocol>UDP</transportProtocol>
+			<port>3000</port>
+		</listener>
+		<udpTemplateLifetime>0</udpTemplateLifetime>
+		<next>2</next>
+	</ipfixCollector>
+
+	<netflowV9Converter id="2">
+		<keepFlowSysUpTime>true</keepFlowSysUpTime>
+		<next>3</next>
+	</netflowV9Converter>
+
+	<ipfixQueue id="3">
+		<entries>1000</entries>
+		<next>8</next>
+	</ipfixQueue>
+	
+	<ipfixPrinter id="8">
+		<outputType>tree</outputType>
+		<!--<filename>output.txt</filename>-->
+	</ipfixPrinter>
+</ipfixConfig>
