@@ -195,14 +195,14 @@ function collapse_forks() {
     PARENT_CLONE_URL=$(cat ${repo}/repo_detail.json | jq -r '.parent.clone_url')
 
     # Add & Commit before merging the subtree
-    # $GIT add $repo/
-    # $GIT commit -m "[COLLAPSE] Add fork of ${REPO_NAME} to tree."
+    $GIT add $repo/
+    $GIT commit -m "[COLLAPSE] Add fork of ${REPO_NAME} to tree."
     echo "Running $GIT subtree add --prefix ${SUBTREE_PATH}/tree ${PARENT_CLONE_URL} master --squash"
     $GIT subtree add --prefix ${SUBTREE_PATH}/tree ${PARENT_CLONE_URL} master --squash
   done
 
-  $GIT add .
-  $GIT commit -m "[COLLAPSE] Add subtree forks"
+  # $GIT add .
+  # $GIT commit -m "[COLLAPSE] Add subtree forks"
 }
 
 if [ -z ${GH_CLEANUP_TOKEN+x} ]; then
