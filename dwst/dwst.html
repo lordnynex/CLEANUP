@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<!--
+Dark WebSocket Terminal
+
+CC0, http://creativecommons.org/publicdomain/zero/1.0/
+
+To the extent possible under law, Dark WebSocket Terminal developers have waived all copyright and related or neighboring rights to Dark WebSocket Terminal.
+
+Dark WebSocket Terminal developers:
+Toni Ruottu <toni.ruottu@iki.fi>, Finland 2010-2012
+William Orr <will@worrbase.com>, US 2012
+
+-->
+<html>
+<head>
+<title>Dark WebSocket Terminal</title>
+<script src="dwst.js"></script>
+<link rel="stylesheet" type="text/css" href="dwst.css" /> 
+</head>
+<body>
+<div id="screen1" class="screen">
+<table id="ter1" class="terminal">
+</table>
+</div>
+<div class="bar2">
+<table class="consolebar"><tr>
+<td id="clock1" style="color: transparent;" class="time rightpad leftpad">00:00:00</td>
+<td><input id="msg1" type="text" value=""></td>
+<td class="button rightpad"><input id="sendbut1" type="button" value="send" disabled="disabled"></td>
+<td class="button rightpad"><input id="menubut1" type="button" value="menu"></td>
+</tr></table>
+</div>
+
+<div id="open" style="visibility: hidden;">
+<h1><a href="?">Dark WebSocket Terminal</a></h1>
+<table class="panel">
+<tr><td class="label">socket:</td><td><input type="text" id="url1" value="ws://echo.websocket.org/"></td></tr>
+<tr><td>protocol:</td><td><input type="text" id="proto1" value=""></td></tr>
+<tr><td colspan="2"><input id="conbut1" type="button" value="connect"></td></tr>
+</table>
+
+<p xmlns:dct="http://purl.org/dc/terms/" xmlns:vcard="http://www.w3.org/2001/vcard-rdf/3.0#" class="footer"> 
+  <a rel="license" href="http://creativecommons.org/publicdomain/zero/1.0/"> 
+    <img src="cc0.png" style="border-style: none;" alt="CC0" /></a> 
+
+  To the extent possible under law, <em>Dark WebSocket Terminal developers</em> 
+  have waived all copyright and related or neighboring rights to
+  <span property="dct:title">Dark WebSocket Terminal</span>.
+</p>
+</div>
+<div id="fileframe" style="visibility: hidden;">
+<input id="file1" type="file"/>
+</div>
+</body>
+</html>
