@@ -91,7 +91,7 @@ function collapse_forks() {
   find ${FORKS_DIR} -maxdepth 1 -type d '!' -exec test -e "{}/.gitkeep" ';' -exec touch "{}/.gitkeep" ';'
 
   # Walk for any new additions
-  for repo in `find ./${FORK_DIR_NAME} -mindepth 2 -maxdepth 2 -type d '!' -exec test -d '{}/tree/' ';' -print`; do
+  for repo in `find ${FORK_DIR_NAME} -mindepth 2 -maxdepth 2 -type d '!' -exec test -d '{}/tree/' ';' -print`; do
     # Extract original parent clone url
     PARENT_CLONE_URL=$(cat ${repo}/repo_detail.json | jq -r '.parent.clone_url')
 
