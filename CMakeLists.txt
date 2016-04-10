@@ -1,0 +1,103 @@
+project(smsgate)
+cmake_minimum_required(VERSION 2.6)
+include_directories( "/usr/local/include" )
+include_directories( "/usr/include" )
+include_directories( "core" )
+include_directories( "web" )
+include_directories( "utils" )
+link_directories( "/usr/local/lib" )
+link_directories( "/usr/lib" )
+
+set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-DBOOST_SPIRIT_THREADSAFE")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
+#set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -pg")
+
+#Web
+set( smsgate_SRCS ${smsgate_SRCS} web/AdminPage.h            web/AdminPage.cpp )
+set( smsgate_SRCS ${smsgate_SRCS} web/CountryGatesStats.h    web/CountryGatesStats.cpp )
+set( smsgate_SRCS ${smsgate_SRCS} web/MonitoringHandler.h    web/MonitoringHandler.cpp )
+set( smsgate_SRCS ${smsgate_SRCS} web/NumberInfoPage.h       web/NumberInfoPage.cpp )
+set( smsgate_SRCS ${smsgate_SRCS} web/PersonalCabinet.h      web/PersonalCabinet.cpp )
+set( smsgate_SRCS ${smsgate_SRCS} web/PersonalPage.h         web/PersonalPage.cpp )
+set( smsgate_SRCS ${smsgate_SRCS} web/TariffEditor.h         web/TariffEditor.cpp )
+set( smsgate_SRCS ${smsgate_SRCS} web/PartnerEditor.h        web/PartnerEditor.cpp )
+set( smsgate_SRCS ${smsgate_SRCS} web/RoutingEditor.h        web/RoutingEditor.cpp )
+set( smsgate_SRCS ${smsgate_SRCS} web/LoginBlock.h           web/LoginBlock.cpp )
+set( smsgate_SRCS ${smsgate_SRCS} web/SendMessageForm        web/SendMessageForm.cpp )
+set( smsgate_SRCS ${smsgate_SRCS} web/StatisticsBlock.h      web/StatisticsBlock.cpp )
+
+set( smsgate_SRCS ${smsgate_SRCS} web/WScrollTable.h         web/WScrollTable.cpp )
+set( smsgate_SRCS ${smsgate_SRCS} web/WHintLinePassEdit.h )
+set( smsgate_SRCS ${smsgate_SRCS} web/WHintLineEdit.h )
+set( smsgate_SRCS ${smsgate_SRCS} web/TariffOptionEditor.h )
+set( smsgate_SRCS ${smsgate_SRCS} web/RouteOptionEditor.h )
+
+#Utils
+set( smsgate_SRCS ${smsgate_SRCS} utils/Cache.h )
+set( smsgate_SRCS ${smsgate_SRCS} utils/AdvancedQueue.h )
+set( smsgate_SRCS ${smsgate_SRCS} utils/DelayQueue.h )
+set( smsgate_SRCS ${smsgate_SRCS} utils/Error.h )
+set( smsgate_SRCS ${smsgate_SRCS} utils/LimitQueue.h )
+set( smsgate_SRCS ${smsgate_SRCS} utils/Logger.h )
+set( smsgate_SRCS ${smsgate_SRCS} utils/PGSql.h              utils/PGSql.cpp )
+set( smsgate_SRCS ${smsgate_SRCS} utils/PriorityQueue.h )
+set( smsgate_SRCS ${smsgate_SRCS} utils/Queue.h )
+set( smsgate_SRCS ${smsgate_SRCS} utils/Timer.h              utils/Timer.cpp )
+set( smsgate_SRCS ${smsgate_SRCS} utils/utils.h              utils/utils.cpp )
+
+#Core
+set( smsgate_SRCS ${smsgate_SRCS} core/ConfigManager.h       core/ConfigManager.cpp )
+set( smsgate_SRCS ${smsgate_SRCS} core/DataSource.h )
+set( smsgate_SRCS ${smsgate_SRCS} core/DeliveryHandler.h     core/DeliveryHandler.cpp )
+set( smsgate_SRCS ${smsgate_SRCS} core/DLRHandler.h          core/DLRHandler.cpp )
+set( smsgate_SRCS ${smsgate_SRCS} core/EventHandler.h )
+set( smsgate_SRCS ${smsgate_SRCS} core/HttpClient.h          core/HttpClient.cpp )
+set( smsgate_SRCS ${smsgate_SRCS} core/GateManager.h         core/GateManager.cpp )
+#set( smsgate_SRCS ${smsgate_SRCS} core/KSHandler.h           core/KSHandler.cpp )
+set( smsgate_SRCS ${smsgate_SRCS} core/MessageClassifier.h   core/MessageClassifier.cpp )
+set( smsgate_SRCS ${smsgate_SRCS} core/MTHandler.h           core/MTHandler.cpp )
+set( smsgate_SRCS ${smsgate_SRCS} core/Operation.h )
+set( smsgate_SRCS ${smsgate_SRCS} core/MessagesQueue.h       core/MessagesQueue.cpp )
+set( smsgate_SRCS ${smsgate_SRCS} core/PartnerManager.h      core/PartnerManager.cpp )
+set( smsgate_SRCS ${smsgate_SRCS} core/RequestHandler.h      core/RequestHandler.cpp )
+set( smsgate_SRCS ${smsgate_SRCS} core/RequestTracker.h      core/RequestTracker.cpp )
+set( smsgate_SRCS ${smsgate_SRCS} core/ReportPage.h          core/ReportPage.cpp )
+set( smsgate_SRCS ${smsgate_SRCS} core/SMPPGate.h            core/SMPPGate.cpp )
+set( smsgate_SRCS ${smsgate_SRCS} core/SMPPGateManager.h     core/SMPPGateManager.cpp )
+set( smsgate_SRCS ${smsgate_SRCS} core/SMPPGateFilterParser.h core/SMPPGateFilterParser.cpp )
+set( smsgate_SRCS ${smsgate_SRCS} core/SMSMessage.h          core/SMSMessage.cpp )
+set( smsgate_SRCS ${smsgate_SRCS} core/SMSRequest.h          core/SMSRequest.cpp )
+set( smsgate_SRCS ${smsgate_SRCS} core/StatManager.h         core/StatManager.cpp )
+set( smsgate_SRCS ${smsgate_SRCS} core/Tariff.h              core/Tariff.cpp )
+set( smsgate_SRCS ${smsgate_SRCS} core/Route.h               core/Route.cpp )
+
+set( ghelper_SRCS ${ghelper_SRCS} core/SMPPGateFilterParser.h core/SMPPGateFilterParser.cpp )
+
+#set (Boost_USE_STATIC_LIBS FALSE)
+#set (Boost_USE_MULTITHREADED TRUE)
+
+#find_package (Boost 1.44 REQUIRED COMPONENTS system thread signals date_time regex program_options)
+
+#link_directories (${Boost_LIBRARY_DIRS})
+#include_directories (${Boost_INCLUDE_DIRS})
+
+set( smsgate_linked_libs wt wthttp curl pqxx boost_system-mt boost_thread-mt boost_serialization-mt boost_signals-mt boost_date_time-mt boost_regex-mt boost_program_options-mt)
+if ( ${CMAKE_SYSTEM_NAME} MATCHES FreeBSD )
+        set( smsgate_linked_libs ${smsgate_linked_libs} iconv )
+endif ( ${CMAKE_SYSTEM_NAME} MATCHES FreeBSD )
+
+add_executable(smsgate ${smsgate_SRCS} smsgate.cpp)
+target_link_libraries(smsgate ${smsgate_linked_libs})
+
+add_executable(thelper ${smsgate_SRCS} thelper.cpp)
+target_link_libraries(thelper ${smsgate_linked_libs})
+
+add_executable(ghelper ${ghelper_SRCS} ghelper.cpp)
+target_link_libraries(ghelper ${smsgate_linked_libs})
+
+
+#set( pgtest_SRCS ${pgtest_SRCS} PGSql.h               PGSql.cpp )
+#set( pgtest_linked_libs pqxx boost_thread-mt )
+#add_executable(pgtest ${pgtest_SRCS} pgtest.cpp)
+#target_link_libraries(pgtest ${pgtest_linked_libs})
+

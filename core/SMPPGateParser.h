@@ -1,0 +1,4 @@
+#ifndef SMPPGATEPARSER_H
+#define SMPPGATEPARSER_H
+
+#endif // SMPPGATEPARSER_H

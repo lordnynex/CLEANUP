@@ -1,0 +1,45 @@
+.rowOk {
+background-color: #bcf3ac;
+}
+
+.rowWarn {
+background-color: #f3edac;
+}
+
+.rowErr {
+background-color: #f1afa0;
+}
+
+table.restable {
+width:		100%;
+max-width:	100%;
+}
+
+table.restable TD {
+border:		1px solid grey;
+padding:	1px 5px;
+font-family:	Verdana,Arial,Sans-serif;
+font-size:	12px;
+}
+
+table.restable TH {
+padding:	1px 5px;
+font-family:	Verdana,Arial,Sans-serif;
+font-size:	14px;
+}
+
+table.datetable TD {
+border:		0px solid grey;
+padding:	1px 1px;
+font-family:	Verdana,Arial,Sans-serif;
+font-size:	12px;
+}
+
+.link {
+color:		blue;
+cursor:		pointer;
+}
+
+.ww {
+word-wrap:	break-word;
+}
