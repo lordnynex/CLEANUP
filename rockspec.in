@@ -1,0 +1,27 @@
+package = "lua-pythonic-optparse"
+version = "$(_VERSION)"
+source = {
+   --url = "https://github.com/davidm/lua-pythonic-optparse/zipball/v$(_VERSION)",
+   url = "git://github.com/davidm/lua-pythonic-optparse.git",
+   branch='v$(_VERSION)'
+}
+description = {
+   summary    = "'pythonic.optparse' Command-line argument parsing similar to Python's optparse library",
+   detailed   = [[]],
+   license    =  "MIT/X11",
+   homepage   = "https://github.com/davidm/lua-pythonic-optparse",
+   maintainer = "David Manura <http://lua-users.org/wiki/DavidManura>",
+}
+dependencies = {
+  "lua >= 5.1",  -- including 5.2
+}
+build = {
+  type = "none",
+  install = {
+     lua = {
+        ["pythonic.optparse"] = "lmod/pythonic/optparse.lua",
+     }
+  },
+  copy_directories = {"tests"}
+}
+-- _VERSION from lmod/pythonic/optparse.lua
