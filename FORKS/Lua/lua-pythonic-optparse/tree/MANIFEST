@@ -1,0 +1,9 @@
+COPYRIGHT.txt
+MANIFEST
+README.txt
+rockspec.in
+dist.info
+util.mk
+lmod/pythonic/optparse.lua
+test/example.lua
+test/test.lua
